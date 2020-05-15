@@ -6,7 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+<<<<<<< Updated upstream
         <module name="recipefinder" />
+=======
+        <module name="recipe-finder" />
+>>>>>>> Stashed changes
       </profile>
     </annotationProcessing>
   </component>

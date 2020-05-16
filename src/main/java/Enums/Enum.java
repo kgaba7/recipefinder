@@ -2,12 +2,12 @@ package Enums;
 
 public class Enum {
 
-    public enum ingridientType {
-        HÚS, ZÖLDSÉG, FŰSZER, GYÜMÖLCS, TEJTERMÉK, TÉSZTA, FOLYADÉK, GOMBA
+    public enum ingredientType {
+        MEAT, VEGETABLE, SPYCE, FRUIT, DAIRYPPRODUCT, PASTA, LIQUID, MUSHROOM
     }
 
     public enum ingredientQuantityType {
-        GRAMM, KILÓ, LITER, EVŐKANÁL, CSIPET, KVSKANÁL, EGÉSZ, FÉL, NEGYED, HARMAD
+        GRAM, KILO, LITER, TABLESPOON, PINCH, TEASPOON, WHOLE, HALF, QUARTER, THIRD
     }
 
 

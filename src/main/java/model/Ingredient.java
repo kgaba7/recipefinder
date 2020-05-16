@@ -11,7 +11,7 @@ public class Ingredient {
     private double quantity;
     private boolean isAvalible;
 
-    private Enum.ingridientType type;
+    private Enum.ingredientType type;
     private Enum.ingredientQuantityType quantityType;
 
 
@@ -39,11 +39,11 @@ public class Ingredient {
         isAvalible = avalible;
     }
 
-    public Enum.ingridientType getType() {
+    public Enum.ingredientType getType() {
         return type;
     }
 
-    public void setType(Enum.ingridientType type) {
+    public void setType(Enum.ingredientType type) {
         this.type = type;
     }
 

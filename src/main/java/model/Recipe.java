@@ -9,7 +9,7 @@ public class Recipe {
     private String description;
     private double calories;
     private double cookTime;
-    private String recipeID; // ez String vagy jó egy double/int is akár.. nem tudom lényegesen gyorsabb-e
+    private int recipeID;
     private double difficulty;
     private boolean isFavorite;
     private String URL;
@@ -55,11 +55,11 @@ public class Recipe {
         this.cookTime = cookTime;
     }
 
-    public String getRecipeID() {
+    public int getRecipeID() {
         return recipeID;
     }
 
-    public void setRecipeID(String recipeID) {
+    public void setRecipeID(int recipeID) {
         this.recipeID = recipeID;
     }
 

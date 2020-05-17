@@ -3,7 +3,7 @@ package Enums;
 public class Enum {
 
     public enum ingredientType {
-        MEAT, VEGETABLE, SPYCE, FRUIT, DAIRYPPRODUCT, PASTA, LIQUID, MUSHROOM
+        MEAT, VEGETABLE, SPICE, FRUIT, DAIRYPPRODUCT, PASTA, LIQUID, MUSHROOM
     }
 
     public enum ingredientQuantityType {

@@ -1,11 +1,13 @@
 package controller;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import view.RecipeFinderMainWindow;
 
 /**
  * @author kissg on 2020. 05. 15.
  */
 public class RecipeFinderController extends BaseController {
+   private RecipeFinderMainWindow recipeFinderMainWindow;
 
     /**
      * Exits current program

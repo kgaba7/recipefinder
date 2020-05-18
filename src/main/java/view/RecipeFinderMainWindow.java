@@ -108,7 +108,7 @@ public class RecipeFinderMainWindow extends Application {
         screenBounds = Screen.getPrimary().getBounds();
 
 
-        //TODO set sizes CHECK
+        //TODO set sizes CHECK? vagy nem a scene sizera gondoltál?
     }
 
     /**

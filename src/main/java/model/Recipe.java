@@ -14,6 +14,7 @@ public class Recipe {
     private boolean isFavorite;
     private String URL;
     private boolean isUserMade;
+    private int servings;
 
     public String getName() {
         return name;
@@ -93,5 +94,13 @@ public class Recipe {
 
     public void setUserMade(boolean userMade) {
         isUserMade = userMade;
+    }
+
+    public int getServings() {
+        return servings;
+    }
+
+    public void setServings(int servings) {
+        this.servings = servings;
     }
 }

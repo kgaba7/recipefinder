@@ -4,11 +4,13 @@ import controller.RecipeFinderController;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -33,7 +35,8 @@ public class RecipeFinderMainWindow extends Application {
         paneContainer.add(paneButtons, 0, 1);
 
         //TODO set size
-        Scene scene = new Scene(paneContainer, 200, 200);
+        Scene scene = new Scene(paneContainer, screenBounds.getWidth()/2, screenBounds.getHeight()/3);
+
 
         primaryStage.setTitle("Recipe Finder");
         primaryStage.setScene(scene);
@@ -102,9 +105,16 @@ public class RecipeFinderMainWindow extends Application {
         this.btnExit = new Button("Exit");
         this.btnScrape = new Button("Download");
 
-        //TODO set sizes
+        screenBounds = Screen.getPrimary().getBounds();
+
+
+        //TODO set sizes CHECK
     }
 
+    /**
+     *  screenBounds gets primary screen width and height.
+     */
+    private Rectangle2D screenBounds;
     private Label lblUrl;
     private TextField txtfUrl;
     private Button btnExit;

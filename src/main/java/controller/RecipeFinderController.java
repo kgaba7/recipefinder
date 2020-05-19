@@ -73,7 +73,7 @@ public class RecipeFinderController extends BaseController {
          *  to access ALL pages this bit of the URL must me changed:  "page=0%2C1" = second page, "page=0%2C2" = third page, "page=0%2Cn" = n + 1 th page ...
          *  NOTE: if the given main category (with 100 food names/page) has n number of pages and the generated URL points to a bigger number than n (eg: 10 pages and you point to 84th page) the url will point to the n th (the last) page still.
          *
-         *  to access the specific recipe URL in a a given page food names msut be scraped (100/page)
+         *  to access the specific recipe URL in a a given page food names must be scraped (100/page)
          *  in each page there is a ul element with an attribute:   class="article-list-items clearfix"
          *  this ul list contains every recipe in each page, in the following way it can be accessed
          *  the ul list contains a li element with an attribute:  class="recept-118" (constant in all of the categories and in all pages)
@@ -81,7 +81,7 @@ public class RecipeFinderController extends BaseController {
          *  this contains an attribute href with a href attribute value that  contains the information we want in the fallowing way:  href="/recept/chilis-hal"
          *  now we have access to the food names
          *  now we need the new base url "base URL2" : https://www.nosalty.hu/
-         *  new base URL2 + this href attrigute value will point to the specific recipe URL in every case eg: https://www.nosalty.hu/recept/chilis-hal
+         *  new base URL2 + this href attribute value will point to the specific recipe URL in every case eg: https://www.nosalty.hu/recept/chilis-hal
          *SUMMARY:
          * todo summary
          * todo how to scrape secific recipe information for the Object: Recipe
@@ -91,11 +91,11 @@ public class RecipeFinderController extends BaseController {
          */
 
         /** STREETKITCHEN
-         *in theory the base URL: https://streetkitchen.hu/category/receptek/ contains ALL recipes in the site
-         * this site has edvenced design ( at least in compared to nosallty:) )
-         * the base URL contains  a div with attribute: class="article-list-container"
+         *in theory the base URL: https://streetkitchen.hu/category/receptek/ contains ALL recipes in the site... i scrolled down for ages it never ends..
+         * this site has advanced design ( at least in compared to nosallty:) )
+         * the base URL contains  a div with attribute: class="article-list-container" contains all recipes!
          * this basically contains a grid in the following way
-         * this contains a div with: class="row"
+         * this contains many div -s  with: class="row"
          * this contains a div with:  class= "col-content-item-small archive-col-0" and also class= "col-content-item-small archive-col-1" ... each row contains different number of columns
          * these elements contain  an article attribute with a complex class name... eg: sk-item sk-small sk-item-type-normal post-12517574 post type-post status-publish format-standard has-post-thumbnail hentry category-brutalis-fogasok category-friss category-receptek category-street-kitchen category-videokosar tag-burgonya tag-dodolle tag-krumpli tag-lecso tag-magyaros tag-szalonna
          *the article contains furthermore a href pointing to the specific recipe URL eg: <a href="https://streetkitchen.hu/brutalis-fogasok/dodolle-hazi-lecsoval-ahogy-ze-kesziti/" class="article-link"></a>
@@ -104,9 +104,10 @@ public class RecipeFinderController extends BaseController {
          * sometimes the row class will only contain 1 col eg: class="col archive-col-7"  OR class= "col-content-item-horizontal horizontal_left archive-col-16"(the rest of the scrape is the same)
          * sometimes the row contains only one col eg:         class="col-content-item-horizontal archive-col-8 horizontal_right"
          *
-         *
+         * i dont think its scrapeble with jsoup :(
          *
          * SUMMARY:
+         *
          * todo summary
          * todo scrape specific recipe for Object creation
          *

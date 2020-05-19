@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 /**
  * @author kissg on 2020. 05. 15.
  */
-public class RecipeFinderMainWindow extends Application {
+public class RecipeFinderMainWindow  extends Application {
     private RecipeFinderController controller;
 
     public void start(Stage primaryStage) throws Exception {
@@ -83,7 +83,7 @@ public class RecipeFinderMainWindow extends Application {
     /**
      * Starts download session
      */
-    private void download() {
+    private void download() throws Exception {
         controller.downloadFactory(this.txtfUrl.getText());
     }
 
@@ -92,7 +92,13 @@ public class RecipeFinderMainWindow extends Application {
      */
     private void addHandlersToButtons() {
         this.btnExit.setOnAction(event -> exit());
-        this.btnScrape.setOnAction(event -> download());
+        this.btnScrape.setOnAction(event -> {
+            try {
+                download();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -112,7 +118,7 @@ public class RecipeFinderMainWindow extends Application {
     }
 
     /**
-     *  screenBounds gets primary screen width and height.
+     *  screenBounds gets primary screen width and height
      */
     private Rectangle2D screenBounds;
     private Label lblUrl;

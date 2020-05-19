@@ -104,7 +104,7 @@ public class RecipeFinderController extends BaseController {
          * sometimes the row class will only contain 1 col eg: class="col archive-col-7"  OR class= "col-content-item-horizontal horizontal_left archive-col-16"(the rest of the scrape is the same)
          * sometimes the row contains only one col eg:         class="col-content-item-horizontal archive-col-8 horizontal_right"
          *
-         * i dont think its scrapeble with jsoup :(
+         * i dont think its scrapable with jsoup  or it will be hard.. i have a few ideas
          *
          * SUMMARY:
          *

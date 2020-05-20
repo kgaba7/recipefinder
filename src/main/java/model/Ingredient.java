@@ -1,6 +1,6 @@
 package model;
 
-import Enums.Constants;
+import Constants.Constant;
 
 /**
  * @author kissg on 2020. 05. 15.
@@ -11,8 +11,8 @@ public class Ingredient {
     private double quantity;
     private boolean isAvalible;
 
-    private Constants.ingredientType type;
-    private Constants.ingredientQuantityType quantityType;
+    private Constant.ingredientType type;
+    private Constant.ingredientQuantityType quantityType;
 
 
     public String getName() {
@@ -39,19 +39,19 @@ public class Ingredient {
         isAvalible = avalible;
     }
 
-    public Constants.ingredientType getType() {
+    public Constant.ingredientType getType() {
         return type;
     }
 
-    public void setType(Constants.ingredientType type) {
+    public void setType(Constant.ingredientType type) {
         this.type = type;
     }
 
-    public Constants.ingredientQuantityType getQuantityType() {
+    public Constant.ingredientQuantityType getQuantityType() {
         return quantityType;
     }
 
-    public void setQuantityType(Constants.ingredientQuantityType quantityType) {
+    public void setQuantityType(Constant.ingredientQuantityType quantityType) {
         this.quantityType = quantityType;
     }
 }

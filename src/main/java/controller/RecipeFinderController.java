@@ -113,6 +113,78 @@ public class RecipeFinderController extends BaseController {
     private void generateRecipeURL() {
 
 
+    }
+
+
+
+    /** First i need to get access to main categories containing  all the links to the specific recipes
+     * @param categories NOTE: can be scraped too, than put in a collection, will not affect the method
+     * @param baseURL    NOTE: maybe more elegant with regex?
+     */
+    public String[] insertMainFoodCategoryToURL(String[] categories, String baseURL) {
+        String[] mainCategoryURL = new String[40];
+
+        for (int i = 0; i < categories.length; i++) {
+            mainCategoryURL[i] = baseURL.replace("*", categories[i]);
+        }
+        for (String i : mainCategoryURL) {
+            System.out.println(i);
+
+        }
+        return mainCategoryURL;
+    }
+
+
+    /**
+     * to iterate trough all pages in main food categories, given by the site itself, I need these methods:
+     * 1 inserts String between two specified chars
+     * 2 replaces String between two specified chars
+     * 3 add a String to specific index to base String
+     *
+     *Basically modify a BASE URL in every website, to get access to all pages containing the links of all recipes
+     *
+     *
+     */
+
+//    /**
+//     * @param base      URL to modify
+//     * @param additions String array to be inserted
+//     * @param leftBound &  @param rightBound  between these characters the additios will be inserted
+//     */
+//    public void modifyURL(String base, String[] additions, char leftBound, char rightBound) {
+//
+//    }
+//
+//    /**
+//     * @param base      URL to modify
+//     * @param addition  String to be inserted
+//     * @param leftBound &  @param rightBound  between these characters the additios will be inserted
+//     */
+//    public void modifyURL(String base, String addition, char leftBound, char rightBound) {
+//
+//    }
+
+
+//    /**
+//     * I need to insert addition String between "?" AND "l"
+//     * maybe more elegant with regex
+//     * maybe with insertAfter ?
+//     * STRINGBUFFER ?
+//     * another method?
+//     */
+//    public String iteratePagesIFBaseURLIsDifferentInFirstPage(String baseURL, String addition, char leftBound, char rightBound) {
+//        StringBuilder result = new StringBuilder(baseURL);
+//        int page = 1;
+//        result.insert(baseURL.indexOf(leftBound), leftBound + addition);
+//
+//        System.out.println(result);
+//        return result.toString();
+//    }
+
+    public void iteratePages(String baseURL) {
+
+    }
+    public void iteratePages(String baseURL, int pages) {
 
     }
 
@@ -121,10 +193,15 @@ public class RecipeFinderController extends BaseController {
      * "base URL" is:  https://www.nosalty.hu/receptek/kategoria/  [ x ]  /osszes?limit=100&view=small&order=abc
      *  x will change according to the sites main food categories eg: "aprosutemeny", "husetelek"... need a Collection to store them and loop trough
      *  (
+     *
      *  OR not in collection, but scrape the main categories themselves from: https://www.nosalty.hu/receptek
      *  ul class="article-list-items clearfix" -> li class="kategoria kategoria-118" -> div class="article-content"
      *  then like this: <a href="/receptek/kategoria/befottek" class="img-box-subtitle bold">befőttek</a>
+     *
      *  )
+     *
+     *  SCRATCH THE ABOVE!!! this way BASE URL can be constant: this is first page!!! (method already exists to the complicated solution, maybe is will come in handy somewhere else)
+     *  https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc
      *  this will generate the URL of the FIRST page of x main food category eg: https://www.nosalty.hu/receptek/kategoria/husetelek/osszes?limit=100&view=small&order=abc
      * this URL contains 100 food names/page in x main food category
      *  to access the SECOND page the URL must change eg: https://www.nosalty.hu/receptek/kategoria/husetelek/osszes?page=0%2C1&limit=100&view=small&order=abc
@@ -153,7 +230,7 @@ public class RecipeFinderController extends BaseController {
      *
      */
 
-    /** STREETKITCHEN todo figure it out..
+    /** STREETKITCHEN todo figure it out.. PLEASE MY NIGGA
      *in theory the base URL: https://streetkitchen.hu/category/receptek/ contains ALL recipes in the site... i scrolled down for ages it never ends..
      * OR https://streetkitchen.hu/?s=&cat=274%2C54%2C71%2C43%2C95%2C251%2C47%2C87%2C697%2C77%2C303%2C66%2C159%2C125%2C838%2C60%2C286%2C&cat_array%5B%5D=125&cat_array%5B%5D=251&cat_array%5B%5D=77&cat_array%5B%5D=159&cat_array%5B%5D=838&cat_array%5B%5D=95&cat_array%5B%5D=697&cat_array%5B%5D=274&cat_array%5B%5D=60&cat_array%5B%5D=43&cat_array%5B%5D=87&cat_array%5B%5D=303&cat_array%5B%5D=286&cat_array%5B%5D=71&cat_array%5B%5D=47&cat_array%5B%5D=66&cat_array%5B%5D=54
      * this site has advanced design ( at least in compared to nosallty:) )

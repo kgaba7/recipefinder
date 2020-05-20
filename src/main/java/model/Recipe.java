@@ -1,5 +1,7 @@
 package model;
 
+import java.io.File;
+
 /**
  * @author kissg on 2020. 05. 15.
  */
@@ -15,6 +17,7 @@ public class Recipe {
     private String URL;
     private boolean isUserMade;
     private int servings;
+    private File picture;
 
     public String getName() {
         return name;
@@ -102,5 +105,13 @@ public class Recipe {
 
     public void setServings(int servings) {
         this.servings = servings;
+    }
+
+    public File getPicture() {
+        return picture;
+    }
+
+    public void setPicture(File picture) {
+        this.picture = picture;
     }
 }

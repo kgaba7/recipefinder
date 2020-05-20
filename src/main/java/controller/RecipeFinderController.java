@@ -41,7 +41,14 @@ public class RecipeFinderController extends BaseController {
             scrapeReceptneked(url);
             return;
         }
-
+        if (url.toLowerCase().contains("recepttar")) {
+            scrapeRecepttar(url);
+            return;
+        }
+        if (url.toLowerCase().contains("mindmegette")) {
+            scrapeMindmegette(url);
+            return;
+        }
     }
 
     /**
@@ -65,14 +72,44 @@ public class RecipeFinderController extends BaseController {
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
-
+    /**
+     * Downloads a single recipe from the given "Receptneked" URL
+     *
+     * @param url URL
+     */
     private void scrapeReceptneked(String url) throws IOException {
         page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
+    /**
+     * Downloads a single recipe from the given "Recepttar" URL
+     *
+     * @param url URL
+     */
+    private void scrapeRecepttar(String url) throws IOException {
+        page = Jsoup.connect(url).get();
+        System.out.println(page.text());
+        //throw new NotImplementedException();
+    }
+    /**
+     * Downloads a single recipe from the given "Mindmegette" URL
+     *
+     * @param url URL
+     */
+    private void scrapeMindmegette(String url) throws IOException {
+        page = Jsoup.connect(url).get();
+        System.out.println(page.text());
+        //throw new NotImplementedException();
+    }
 
+    /**
+     * Generates URL of specific recipes
+      */
     private void generateRecipeURL() {
+
+    }
+
         /** NOSALTY:
          * "base URL" is:  https://www.nosalty.hu/receptek/kategoria/  [ x ]  /osszes?limit=100&view=small&order=abc
          *  x will change according to the sites main food categories eg: "aprosutemeny", "husetelek"... need a Collection to store them and loop trough
@@ -93,15 +130,19 @@ public class RecipeFinderController extends BaseController {
          *  now we need the new base url "base URL2" : https://www.nosalty.hu/
          *  new base URL2 + this href attribute value will point to the specific recipe URL in every case eg: https://www.nosalty.hu/recept/chilis-hal
          *SUMMARY:
-         * todo summary
+         * loop main food categories and manipulate base url
+         * get food names of first page
+         * add name to https://www.nosalty.hu/ base URL
+         * get food details
          * todo how to scrape secific recipe information for the Object: Recipe
          *
          *
          *
          */
 
-        /** STREETKITCHEN
+        /** STREETKITCHEN todo figure it out..
          *in theory the base URL: https://streetkitchen.hu/category/receptek/ contains ALL recipes in the site... i scrolled down for ages it never ends..
+         * OR https://streetkitchen.hu/?s=&cat=274%2C54%2C71%2C43%2C95%2C251%2C47%2C87%2C697%2C77%2C303%2C66%2C159%2C125%2C838%2C60%2C286%2C&cat_array%5B%5D=125&cat_array%5B%5D=251&cat_array%5B%5D=77&cat_array%5B%5D=159&cat_array%5B%5D=838&cat_array%5B%5D=95&cat_array%5B%5D=697&cat_array%5B%5D=274&cat_array%5B%5D=60&cat_array%5B%5D=43&cat_array%5B%5D=87&cat_array%5B%5D=303&cat_array%5B%5D=286&cat_array%5B%5D=71&cat_array%5B%5D=47&cat_array%5B%5D=66&cat_array%5B%5D=54
          * this site has advanced design ( at least in compared to nosallty:) )
          * if u reach the bottom of the page, it will load more content..
          * the base URL contains  a div with attribute: class="article-list-container" contains all recipes!
@@ -118,11 +159,6 @@ public class RecipeFinderController extends BaseController {
          * i dont think its scrapable with jsoup  or it will be hard.. i have a few ideas
          *
          * SUMMARY:
-         *
-         * todo summary
-         * todo scrape specific recipe for Object creation
-         *
-         *
          */
 
         /** RECEPTNEKED ( + 25k recipes)
@@ -139,5 +175,29 @@ public class RecipeFinderController extends BaseController {
          *
          * todo access recipe details
          */
-    }
+
+        /**RECEPTTAR (+ 14k rec)
+         * main categories to hard code, like: https://www.recepttar.hu/kategoria/levesek-93, https://www.recepttar.hu/kategoria/tavaszi-etelek-71
+         * in each page there is an element with: class="oldalak"
+         * this contains the number of pages in the given main food category
+         * loop is simple between pages. nth page:  https://www.recepttar.hu/kategoria/tavaszi-etelek-71/n
+         *ul -> li -> href contains the specific recipe URL
+         *todo access recipe details
+         */
+
+        /**MINDMEGETTE
+         * main food categories : http://www.mindmegette.hu/kategoria/desszertek/ hard codeing
+         * sub categories: are in h2 tags  in each main page: make a collection
+         * main categories + sub categories + in abc = http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/A/
+         * in each letter (/A/, /G/ etc.) there are multiple pages, the above url is the firs of them!
+         * nth page can be accessed like this: http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/A/?=n
+         * so like.. in F letter the 4th page is:
+         * http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/X?p=4
+         *
+         * access specific recipe url
+         * its all in class="recipe-item end column"
+         * in aa href
+         * todo access recipe details
+         */
+
 }

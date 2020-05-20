@@ -28,16 +28,20 @@ public class RecipeFinderController extends BaseController {
      *
      * @param url URL
      */
-    public int downloadFactory(String url) throws IOException {
+    public void downloadFactory(String url) throws IOException {
         if (url.toLowerCase().contains("nosalty")) {
             scrapeNosalty(url);
-            return 1;
+            return;
         }
         if (url.toLowerCase().contains("streetkitchen")) {
             scrapeStreetkitchen(url);
-            return 2;
+            return;
         }
-        return -1;
+        if (url.toLowerCase().contains("receptneked")) {
+            scrapeReceptneked(url);
+            return;
+        }
+
     }
 
     /**
@@ -57,6 +61,12 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     private void scrapeStreetkitchen(String url) throws IOException {
+        page = Jsoup.connect(url).get();
+        System.out.println(page.text());
+        //throw new NotImplementedException();
+    }
+
+    private void scrapeReceptneked(String url) throws IOException {
         page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
@@ -93,6 +103,7 @@ public class RecipeFinderController extends BaseController {
         /** STREETKITCHEN
          *in theory the base URL: https://streetkitchen.hu/category/receptek/ contains ALL recipes in the site... i scrolled down for ages it never ends..
          * this site has advanced design ( at least in compared to nosallty:) )
+         * if u reach the bottom of the page, it will load more content..
          * the base URL contains  a div with attribute: class="article-list-container" contains all recipes!
          * this basically contains a grid in the following way
          * this contains many div -s  with: class="row"
@@ -112,6 +123,21 @@ public class RecipeFinderController extends BaseController {
          * todo scrape specific recipe for Object creation
          *
          *
+         */
+
+        /** RECEPTNEKED ( + 25k recipes)
+         * base URL: https://receptneked.hu/?s=&category_name= contains all recipes Includeing non recipe articles, can be filtered based on non ingrediant list etc.
+         * first page: https://receptneked.hu/?s=&category_name=
+         * second page: https://receptneked.hu/page/2/?s&category_name
+         * n th page : https://receptneked.hu/page/n/?s&category_name
+         *
+         *to access specific food URL
+         * a div with: id="recipe-list" contains all food names in given page
+         * contains a div with: class="grid-recipe-img-container"
+         * with href attribute to the specific link <a href="https://receptneked.hu/edes-sutemenyek/gyumolcsos-szelet-citromos-kremmel/">
+         *
+         *
+         * todo access recipe details
          */
     }
 }

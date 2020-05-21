@@ -1,6 +1,6 @@
 package model;
 
-import Constants.Constant;
+import constants.Constant;
 
 /**
  * @author kissg on 2020. 05. 15.

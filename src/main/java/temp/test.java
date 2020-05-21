@@ -1,6 +1,6 @@
-package Temp;
+package temp;
 
-import Constants.Constant;
+import constants.Constant;
 import controller.RecipeFinderController;
 import model.Ingredient;
 import org.jsoup.Jsoup;

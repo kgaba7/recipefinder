@@ -1,12 +1,10 @@
 package controller;
 
-import Constants.Constant;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import view.RecipeFinderMainWindow;
 
-import javax.swing.text.Document;
 import java.io.IOException;
 
 /**
@@ -57,10 +55,36 @@ public class RecipeFinderController extends BaseController {
      *
      * @param url URL
      */
-    private void scrapeNosalty(String url) throws IOException {
+    public void scrapeNosalty(String url) throws IOException {
+        url = "https://www.nosalty.hu/recept/frankfurti-kelbimboleves";
+
+        String classContent = "article-content";
+        String classIngredients = "recept-hozzavalok";
+        String classKcal = "recept-kaloriatartalom";
+
         page = Jsoup.connect(url).get();
-        System.out.println(page.text());
-        //throw new NotImplementedException();
+
+//        Elements text = this.page.getElementsByClass(classContent);
+        Elements ingr = this.page.getElementsByClass(classIngredients);
+
+        Elements ul = ingr.get(0).getElementsByTag("ul");
+        Elements lis = ul.get(0).getElementsByTag("li");
+
+        System.out.println("Hozzávalók");
+        for (Element act : lis) {
+            System.out.println(act.text());
+        }
+
+
+        //kalóriával
+        System.out.println();
+        System.out.println("-----KCAL----");
+        url = "https://www.nosalty.hu/recept/kaloria/frankfurti-kelbimboleves";
+        page = Jsoup.connect(url).get();
+
+        Elements kcals = this.page.getElementsByClass(classKcal);
+        Elements values = kcals.get(0).getElementsByTag("span");
+        System.out.println("Kcal 1 adagra: " + values.get(values.size() - 1).text());
     }
 
     /**
@@ -116,8 +140,9 @@ public class RecipeFinderController extends BaseController {
     }
 
 
-
-    /** First i need to get access to main categories containing  all the links to the specific recipes
+    /**
+     * First i need to get access to main categories containing  all the links to the specific recipes
+     *
      * @param categories NOTE: can be scraped too, than put in a collection, will not affect the method
      * @param baseURL    NOTE: maybe more elegant with regex?
      */
@@ -140,10 +165,8 @@ public class RecipeFinderController extends BaseController {
      * 1 inserts String between two specified chars
      * 2 replaces String between two specified chars
      * 3 add a String to specific index to base String
-     *
-     *Basically modify a BASE URL in every website, to get access to all pages containing the links of all recipes
-     *
-     *
+     * <p>
+     * Basically modify a BASE URL in every website, to get access to all pages containing the links of all recipes
      */
 
 //    /**
@@ -180,10 +203,10 @@ public class RecipeFinderController extends BaseController {
 //        System.out.println(result);
 //        return result.toString();
 //    }
-
     public void iteratePages(String baseURL) {
 
     }
+
     public void iteratePages(String baseURL, int pages) {
 
     }
@@ -275,7 +298,8 @@ public class RecipeFinderController extends BaseController {
      *todo access recipe details
      */
 
-    /**MINDMEGETTE
+    /**
+     * MINDMEGETTE
      * main food categories : http://www.mindmegette.hu/kategoria/desszertek/ hard codeing
      * sub categories: are in h2 tags  in each main page: make a collection
      * main categories + sub categories + in abc = http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/A/
@@ -283,11 +307,26 @@ public class RecipeFinderController extends BaseController {
      * nth page can be accessed like this: http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/A/?=n
      * so like.. in F letter the 4th page is:
      * http://www.mindmegette.hu/kategoria/desszertek/palacsintak-es-gofrik/osszes/X?p=4
-     *
+     * <p>
      * access specific recipe url
      * its all in class="recipe-item end column"
      * in aa href
      * todo access recipe details
      */
 
+
+    public void elapsedTimeTest() {
+        try {
+            long start = System.currentTimeMillis();
+            /*
+            kód kód
+            kód stb stb
+             */
+            Thread.sleep(2000);//ez csak azért van itt, hogy "elteljen" 2 sec
+            System.out.println(getElapsedTime(System.currentTimeMillis() - start));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

@@ -18,7 +18,7 @@ public class test {
         //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
         // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
         // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
-        controller.scrapeNosalty("");
+        controller.scrapeNosalty("https://www.nosalty.hu/recept/feher-spargakremleves-andreatol");
     }
 
 

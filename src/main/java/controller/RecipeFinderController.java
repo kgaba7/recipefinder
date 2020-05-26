@@ -8,6 +8,7 @@ import view.RecipeFinderMainWindow;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     public void scrapeNosalty(String url) throws IOException {
-        url = "https://www.nosalty.hu/recept/marhaporkolt-nokedlivel";
+
 
         List<String> ingredients = new ArrayList<>();
         List<String> nutrients = new ArrayList<>();
@@ -70,103 +71,91 @@ public class RecipeFinderController extends BaseController {
         Elements list;
         Elements listElements;
 
-
         String classContent = "article-content";
         String classIngredients = "recept-hozzavalok";
         String classKcal = "recept-kaloriatartalom";
         String descriptionClass = "column-block recept-elkeszites dont-print";
         String recipeProperties = "column-block recept-receptjellemzok dont-print";
         String timeClass = "right-text dont-print";
+        String diffClass = "floatright";
+        String nutrientTableClass = "tapanyagtartalom-tablazat";
+        String nutrientValueClass = "column-block-title";
 
         page = Jsoup.connect(url).get();
 
         //INGREDIENNTS
-//        Elements text = this.page.getElementsByClass(classContent);
         container = this.page.getElementsByClass(classIngredients);
 
         list = container.get(0).getElementsByTag("ul");
         listElements = list.get(0).getElementsByTag("li");
 
-        System.out.println("Hozzávalók");
+        System.out.println("Hozzávalók:");
         for (Element act : listElements) {
             ingredients.add(act.text());
 
         }
         System.out.println(ingredients.toString());
 
-        //todo cal
-//        System.out.println();
-//        System.out.println("-----KCAL----");
-//        url = "https://www.nosalty.hu/recept/marhaporkolt-nokedlivel";
-//        page = Jsoup.connect(url).get();
-
-        //  Elements kcals = this.page.getElementsByClass(classKcal);
-        //   Elements values = kcals.get(0).getElementsByTag("span");
-        //System.out.println("Kcal 1 adagra: " + values.get(values.size() - 1).text());
-
-        //DESCRIPTION + (HYSTORTY OF RECIPE) decsription in list form??
+        //DESCRIPTION + (HYSTORTY OF RECIPE)
         outerDiv = page.getElementsByClass(classContent);
         Elements history = outerDiv.get(0).getElementsByTag("p");
 
 
         outerDiv = page.getElementsByClass(descriptionClass);
         list = outerDiv.get(0).getElementsByTag("ol");
-        listElements = list.get(0).getElementsByTag("li");
 
-        System.out.println(listElements.text());
+        System.out.println("DESCRIPTION: \n");
+        System.out.println(history.text() + "\n" + list.text() + "\n");
 
-        //  DIFFICULTY 1 not rly good
-        outerDiv = page.getElementsByClass(recipeProperties);
-        listElements = outerDiv.get(0).getElementsByTag("a");
+// DIFFICULTY
 
-        // System.out.println(listElements.text());
-
-// DIFFICULTY 2 from top of the page Good!
-
-        innerDiv = page.getElementsByClass("floatright");
+        innerDiv = page.getElementsByClass(diffClass);
         listElements = innerDiv.select("span > a");
 
+        System.out.println("DIFFICULTY: \n");
         System.out.println(listElements.text());
 
 //TIME
         innerDiv = page.getElementsByClass(timeClass);
         listElements = innerDiv.get(0).getElementsByTag("span");
 
+        System.out.println("Time: \n");
         System.out.println(listElements.text());
 
-        //todo nutrient values
-        page = Jsoup.connect(nosaltyNutrientPage("https://www.nosalty.hu/recept/marhaporkolt-nokedlivel")).get();
+        // NUTRIENTS
+        page = Jsoup.connect(nosaltyNutrientPage(url)).get();
 
-        String nutrientTableClass = "tapanyagtartalom-tablazat";
 
         container = page.getElementsByClass(nutrientTableClass);
 
-        outerDiv = container.get(0).getElementsByClass("column-block-title"); // main nutrient type
+        outerDiv = container.get(0).getElementsByClass(nutrientValueClass); // main nutrient type
         innerDiv = container.get(0).getElementsByTag("dl"); // sub
 
-//todo match the sub with the main
-        //fehérje: Összesen: 38.2 g
-        //zsír : Összesen: 14.4 g Telített zsírsav: 4 g Egyszeresen telítetlen zsírsav: 7 g Többszörösen telítetlen zsírsav: 3 g Koleszterin: 107 mg
-        //ásványi anyagok: Összesen: 1.6 g Kalcium: 59 mg Vas: 4 mg Magnézium: 54 mg Foszfor: 407 mg Kálium: 941 mg Nátrium: 141 mg Cink: 9 mg Réz: 0 mg Mangán: 0 mg Szelén: 41 µg
+        /**
+         * todo match the sub with the main
+         *fehérje: Összesen: 38.2 g
+         *zsír : Összesen: 14.4 g Telített zsírsav: 4 g Egyszeresen telítetlen zsírsav: 7 g Többszörösen telítetlen zsírsav: 3 g Koleszterin: 107 mg
+         * ásványi anyagok: Összesen: 1.6 g Kalcium: 59 mg Vas: 4 mg Magnézium: 54 mg Foszfor: 407 mg Kálium: 941 mg Nátrium: 141 mg Cink: 9 mg Réz: 0 mg Mangán: 0 mg Szelén: 41 µg
+         */
 
+        System.out.println("Main and Sub Nutrient values( in order so nth Main matches  nth Sub row ): \n");
         for (Element mian : outerDiv) {
             nutrientsSB.append(mian.text() + "\n");
 
-
         }
+
+
         for (Element sub : innerDiv) {
-
-            nutrientsSB.append(sub.text()+"\n");
-
+            nutrientsSB.append(sub.text() + "\n");
         }
 
 
- //       System.out.println(innerDiv + "\n");
-//        System.out.println(outerDiv.text() + "\n");
-           System.out.println(nutrientsSB.toString());
+//        System.out.println("Nutrient values: \n");
+        System.out.println(nutrientsSB.toString());
 
 
     }
+
 
     /**
      * Can be done by pointing to the article-tabs tabs content-tabs class, and to the first li element a href element.text()

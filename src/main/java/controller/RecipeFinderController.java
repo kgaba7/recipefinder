@@ -2,13 +2,12 @@ package controller;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import view.RecipeFinderMainWindow;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,8 +62,12 @@ public class RecipeFinderController extends BaseController {
 
 
         List<String> ingredients = new ArrayList<>();
-        List<String> nutrients = new ArrayList<>();
+        List<String> nutrientValues = new ArrayList<>();
+        List<String> nutrientCaterories = new ArrayList<>();
         StringBuilder nutrientsSB = new StringBuilder();
+        HashMap<String, String> nutritionalValue = new HashMap<>();
+        int count = 0;
+
         Elements container;
         Elements outerDiv;
         Elements innerDiv;
@@ -130,6 +133,18 @@ public class RecipeFinderController extends BaseController {
 
         outerDiv = container.get(0).getElementsByClass(nutrientValueClass); // main nutrient type
         innerDiv = container.get(0).getElementsByTag("dl"); // sub
+        list = innerDiv.get(0).getElementsByTag("dt");
+        listElements = innerDiv.get(0).getElementsByTag("dd");
+
+        // todo add dt and dd to pairs dor easier use !
+
+        for (Element main : outerDiv) {
+            for (int i = count; count < innerDiv.size(); count++) {
+                nutritionalValue.put(main.text(), innerDiv.get(i).text());
+                count++;
+                break;
+            }
+        }
 
         /**
          * todo match the sub with the main
@@ -139,21 +154,10 @@ public class RecipeFinderController extends BaseController {
          */
 
         System.out.println("Main and Sub Nutrient values( in order so nth Main matches  nth Sub row ): \n");
-        for (Element mian : outerDiv) {
-            nutrientsSB.append(mian.text() + "\n");
 
-        }
+       // nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
 
-
-        for (Element sub : innerDiv) {
-            nutrientsSB.append(sub.text() + "\n");
-        }
-
-
-//        System.out.println("Nutrient values: \n");
-        System.out.println(nutrientsSB.toString());
-
-
+        System.out.println(list.text() + " "+ listElements.text());
     }
 
 

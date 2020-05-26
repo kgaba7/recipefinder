@@ -110,13 +110,20 @@ public class RecipeFinderController extends BaseController {
         listElements = list.get(0).getElementsByTag("li");
 
         System.out.println(listElements.text());
-        //DIFFICULTY
-       outerDiv = page.getElementsByClass("floatright");
-       innerDiv = outerDiv.get(0).getElementsByTag("a");
-       int i =0;
+
+        // todo DIFFICULTY
+        outerDiv = page.getElementsByClass("floatright");
+        innerDiv = outerDiv.get(0).getElementsByTag("a");
+
+        //nutrient values
+        page = Jsoup.connect(nosaltyNutrientPage("https://www.nosalty.hu/recept/marhaporkolt-nokedlivel")).get();
+
+
     }
 
-    /** Can be done by pointing to the article-tabs tabs content-tabs class, and to the first li element a href element.text()
+    /**
+     * Can be done by pointing to the article-tabs tabs content-tabs class, and to the first li element a href element.text()
+     *
      * @param url base url
      * @return the cal page of given recipe
      */
@@ -128,11 +135,10 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
-     *
      * @param url base url
      * @return the nutrient page of given recipe
      */
-    private  String nosaltyNutrientPage(String url) {
+    private String nosaltyNutrientPage(String url) {
         final String addCal = "tapanyag/";
         int pos = url.indexOf("recept/") + 7;
         return url.substring(0, pos) + addCal + url.substring(pos, url.length());

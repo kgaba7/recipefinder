@@ -14,22 +14,24 @@ public class test {
     public static void main(String[] args) throws IOException {
         test myTest = new test();
         RecipeFinderController controller = new RecipeFinderController();
-        // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
-      //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
-        controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
-      // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
+       // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
+        //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
+        // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
+        // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
+        controller.scrapeNosalty("");
     }
 
 
     public void getRecInfoNOSALTY(String url) throws IOException {
         page = Jsoup.connect(url).get();
-        elements = page.select("h1");
+        // elements = page.select("h1").first(); name
+        //elements = page.select("div.recept-elkeszites"); description
+       // elements = page.select("* a[href]"); // select all a with href
+        elements = page.select("div.main-footer");
 
-        name = element.text();
 
+        System.out.println(elements.text());
 
-        System.out.println(name + "\n");
-        System.out.println(name + "\n");
 
     }
 
@@ -54,8 +56,8 @@ public class test {
 
     private String name;  // check
     private Ingredient ingredients;
-    private String description;
-    private double calories;
+    private String description;  // check
+    private String calories;
     private double cookTime;
     private int recipeID;
     private double difficulty;

@@ -6,6 +6,8 @@ import org.jsoup.select.Elements;
 import view.RecipeFinderMainWindow;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kissg on 2020. 05. 15.
@@ -56,35 +58,84 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     public void scrapeNosalty(String url) throws IOException {
-        url = "https://www.nosalty.hu/recept/frankfurti-kelbimboleves";
+        url = "https://www.nosalty.hu/recept/marhaporkolt-nokedlivel";
+
+        List<String> ingredients = new ArrayList<>();
+        Elements container;
+        Elements outerDiv;
+        Elements innerDiv;
+        Elements list;
+        Elements listElements;
+
 
         String classContent = "article-content";
         String classIngredients = "recept-hozzavalok";
         String classKcal = "recept-kaloriatartalom";
+        String descriptionClass = "column-block recept-elkeszites dont-print";
+        String categoryClass = "clearfix";
 
         page = Jsoup.connect(url).get();
 
+        //INGREDIENNTS
 //        Elements text = this.page.getElementsByClass(classContent);
-        Elements ingr = this.page.getElementsByClass(classIngredients);
+        container = this.page.getElementsByClass(classIngredients);
 
-        Elements ul = ingr.get(0).getElementsByTag("ul");
-        Elements lis = ul.get(0).getElementsByTag("li");
+        list = container.get(0).getElementsByTag("ul");
+        listElements = list.get(0).getElementsByTag("li");
 
         System.out.println("Hozzávalók");
-        for (Element act : lis) {
-            System.out.println(act.text());
+        for (Element act : listElements) {
+            ingredients.add(act.text());
+
         }
+        System.out.println(ingredients.toString());
+
+        //todo cal
+//        System.out.println();
+//        System.out.println("-----KCAL----");
+//        url = "https://www.nosalty.hu/recept/marhaporkolt-nokedlivel";
+//        page = Jsoup.connect(url).get();
+
+        //  Elements kcals = this.page.getElementsByClass(classKcal);
+        //   Elements values = kcals.get(0).getElementsByTag("span");
+        //System.out.println("Kcal 1 adagra: " + values.get(values.size() - 1).text());
+
+        //DESCRIPTION + (HYSTORTY OF RECIPE)
+        outerDiv = page.getElementsByClass(classContent);
+        Elements history = outerDiv.get(0).getElementsByTag("p");
 
 
-        //kalóriával
-        System.out.println();
-        System.out.println("-----KCAL----");
-        url = "https://www.nosalty.hu/recept/kaloria/frankfurti-kelbimboleves";
-        page = Jsoup.connect(url).get();
+        outerDiv = page.getElementsByClass(descriptionClass);
+        list = outerDiv.get(0).getElementsByTag("ol");
+        listElements = list.get(0).getElementsByTag("li");
 
-        Elements kcals = this.page.getElementsByClass(classKcal);
-        Elements values = kcals.get(0).getElementsByTag("span");
-        System.out.println("Kcal 1 adagra: " + values.get(values.size() - 1).text());
+        System.out.println(listElements.text());
+        //DIFFICULTY
+       outerDiv = page.getElementsByClass("floatright");
+       innerDiv = outerDiv.get(0).getElementsByTag("a");
+       int i =0;
+    }
+
+    /** Can be done by pointing to the article-tabs tabs content-tabs class, and to the first li element a href element.text()
+     * @param url base url
+     * @return the cal page of given recipe
+     */
+    private String nosaltyCalPage(String url) {
+        final String addCal = "kaloria/";
+        int pos = url.indexOf("recept/") + 7;
+        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
+
+    }
+
+    /**
+     *
+     * @param url base url
+     * @return the nutrient page of given recipe
+     */
+    private  String nosaltyNutrientPage(String url) {
+        final String addCal = "tapanyag/";
+        int pos = url.indexOf("recept/") + 7;
+        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
     }
 
     /**

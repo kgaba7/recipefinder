@@ -2,6 +2,7 @@ package controller;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import view.RecipeFinderMainWindow;
 
@@ -61,6 +62,8 @@ public class RecipeFinderController extends BaseController {
         url = "https://www.nosalty.hu/recept/marhaporkolt-nokedlivel";
 
         List<String> ingredients = new ArrayList<>();
+        List<String> nutrients = new ArrayList<>();
+        StringBuilder nutrientsSB = new StringBuilder();
         Elements container;
         Elements outerDiv;
         Elements innerDiv;
@@ -72,7 +75,8 @@ public class RecipeFinderController extends BaseController {
         String classIngredients = "recept-hozzavalok";
         String classKcal = "recept-kaloriatartalom";
         String descriptionClass = "column-block recept-elkeszites dont-print";
-        String categoryClass = "clearfix";
+        String recipeProperties = "column-block recept-receptjellemzok dont-print";
+        String timeClass = "right-text dont-print";
 
         page = Jsoup.connect(url).get();
 
@@ -100,7 +104,7 @@ public class RecipeFinderController extends BaseController {
         //   Elements values = kcals.get(0).getElementsByTag("span");
         //System.out.println("Kcal 1 adagra: " + values.get(values.size() - 1).text());
 
-        //DESCRIPTION + (HYSTORTY OF RECIPE)
+        //DESCRIPTION + (HYSTORTY OF RECIPE) decsription in list form??
         outerDiv = page.getElementsByClass(classContent);
         Elements history = outerDiv.get(0).getElementsByTag("p");
 
@@ -111,12 +115,55 @@ public class RecipeFinderController extends BaseController {
 
         System.out.println(listElements.text());
 
-        // todo DIFFICULTY
-        outerDiv = page.getElementsByClass("floatright");
-        innerDiv = outerDiv.get(0).getElementsByTag("a");
+        //  DIFFICULTY 1 not rly good
+        outerDiv = page.getElementsByClass(recipeProperties);
+        listElements = outerDiv.get(0).getElementsByTag("a");
 
-        //nutrient values
+        // System.out.println(listElements.text());
+
+// DIFFICULTY 2 from top of the page Good!
+
+        innerDiv = page.getElementsByClass("floatright");
+        listElements = innerDiv.select("span > a");
+
+        System.out.println(listElements.text());
+
+//TIME
+        innerDiv = page.getElementsByClass(timeClass);
+        listElements = innerDiv.get(0).getElementsByTag("span");
+
+        System.out.println(listElements.text());
+
+        //todo nutrient values
         page = Jsoup.connect(nosaltyNutrientPage("https://www.nosalty.hu/recept/marhaporkolt-nokedlivel")).get();
+
+        String nutrientTableClass = "tapanyagtartalom-tablazat";
+
+        container = page.getElementsByClass(nutrientTableClass);
+
+        outerDiv = container.get(0).getElementsByClass("column-block-title"); // main nutrient type
+        innerDiv = container.get(0).getElementsByTag("dl"); // sub
+
+//todo match the sub with the main
+        //fehérje: Összesen: 38.2 g
+        //zsír : Összesen: 14.4 g Telített zsírsav: 4 g Egyszeresen telítetlen zsírsav: 7 g Többszörösen telítetlen zsírsav: 3 g Koleszterin: 107 mg
+        //ásványi anyagok: Összesen: 1.6 g Kalcium: 59 mg Vas: 4 mg Magnézium: 54 mg Foszfor: 407 mg Kálium: 941 mg Nátrium: 141 mg Cink: 9 mg Réz: 0 mg Mangán: 0 mg Szelén: 41 µg
+
+        for (Element mian : outerDiv) {
+            nutrientsSB.append(mian.text() + "\n");
+
+
+        }
+        for (Element sub : innerDiv) {
+
+            nutrientsSB.append(sub.text()+"\n");
+
+        }
+
+
+ //       System.out.println(innerDiv + "\n");
+//        System.out.println(outerDiv.text() + "\n");
+           System.out.println(nutrientsSB.toString());
 
 
     }

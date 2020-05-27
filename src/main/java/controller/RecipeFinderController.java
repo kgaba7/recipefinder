@@ -6,6 +6,7 @@ import org.jsoup.select.Elements;
 import view.RecipeFinderMainWindow;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,11 @@ import java.util.List;
 public class RecipeFinderController extends BaseController {
     private RecipeFinderMainWindow recipeFinderMainWindow;
     private org.jsoup.nodes.Document page;
+    Elements container;
+    Elements outerDiv;
+    Elements innerDiv;
+    Elements list;
+    Elements listElements;
 
     /**
      * Exits current program
@@ -68,11 +74,6 @@ public class RecipeFinderController extends BaseController {
         HashMap<String, String> nutritionalValue = new HashMap<>();
         int count = 0;
 
-        Elements container;
-        Elements outerDiv;
-        Elements innerDiv;
-        Elements list;
-        Elements listElements;
 
         String classContent = "article-content";
         String classIngredients = "recept-hozzavalok";
@@ -136,7 +137,7 @@ public class RecipeFinderController extends BaseController {
         list = innerDiv.get(0).getElementsByTag("dt");
         listElements = innerDiv.get(0).getElementsByTag("dd");
 
-        // todo add dt and dd to pairs dor easier use !
+        // todo add dt and dd to pairs IF the hashmap solution is not good !
 
         for (Element main : outerDiv) {
             for (int i = count; count < innerDiv.size(); count++) {
@@ -146,18 +147,11 @@ public class RecipeFinderController extends BaseController {
             }
         }
 
-        /**
-         * todo match the sub with the main
-         *fehérje: Összesen: 38.2 g
-         *zsír : Összesen: 14.4 g Telített zsírsav: 4 g Egyszeresen telítetlen zsírsav: 7 g Többszörösen telítetlen zsírsav: 3 g Koleszterin: 107 mg
-         * ásványi anyagok: Összesen: 1.6 g Kalcium: 59 mg Vas: 4 mg Magnézium: 54 mg Foszfor: 407 mg Kálium: 941 mg Nátrium: 141 mg Cink: 9 mg Réz: 0 mg Mangán: 0 mg Szelén: 41 µg
-         */
-
         System.out.println("Main and Sub Nutrient values( in order so nth Main matches  nth Sub row ): \n");
 
-       // nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
+        nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
 
-        System.out.println(list.text() + " "+ listElements.text());
+
     }
 
 
@@ -167,11 +161,42 @@ public class RecipeFinderController extends BaseController {
      * @param url base url
      * @return the cal page of given recipe
      */
-    private String nosaltyCalPage(String url) {
-        final String addCal = "kaloria/";
-        int pos = url.indexOf("recept/") + 7;
-        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
+//    private String nosaltyCalPage(String url) {
+//        final String addCal = "kaloria/";
+//        int pos = url.indexOf("recept/") + 7;
+//        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
+//
+//    }
 
+    /**
+     * Returns all of the main food categories in Nosalty
+     * @param url Base url
+     * @return in URL compatible format
+     * @throws IOException
+     */
+    public List getMainFoodCategoriesNOSALTY(String url) throws IOException {
+        List result = new ArrayList();
+        page = Jsoup.connect(url).get();
+
+        outerDiv = page.getElementsByClass("article-list-items clearfix");
+        innerDiv = outerDiv.get(0).getElementsByClass("article-content");
+        list = innerDiv.get(0).getElementsByTag("span");
+        for (Element e : innerDiv) {
+            result.add(stripAccents(e.text()).replace(" ", "-").toLowerCase());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns pharam input without accents
+     * @param input
+     * @return
+     */
+    public static String stripAccents(String input) {
+        return input == null ? null :
+                Normalizer.normalize(input, Normalizer.Form.NFD)
+                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
     /**
@@ -300,13 +325,6 @@ public class RecipeFinderController extends BaseController {
 //        System.out.println(result);
 //        return result.toString();
 //    }
-    public void iteratePages(String baseURL) {
-
-    }
-
-    public void iteratePages(String baseURL, int pages) {
-
-    }
 
 
     /** NOSALTY:
@@ -320,7 +338,8 @@ public class RecipeFinderController extends BaseController {
      *
      *  )
      *
-     *  SCRATCH THE ABOVE!!! this way BASE URL can be constant: this is first page!!! (method already exists to the complicated solution, maybe is will come in handy somewhere else)
+     *  SCRATCH THE ABOVE!!!
+     *  this way BASE URL can be constant: this is first page!!! (method already exists to the complicated solution, maybe is will come in handy somewhere else)
      *  https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc
      *  this will generate the URL of the FIRST page of x main food category eg: https://www.nosalty.hu/receptek/kategoria/husetelek/osszes?limit=100&view=small&order=abc
      * this URL contains 100 food names/page in x main food category

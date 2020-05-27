@@ -1,5 +1,6 @@
 package controller;
 
+import constants.Constant;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -132,8 +133,8 @@ public class RecipeFinderController extends BaseController {
 
         container = page.getElementsByClass(nutrientTableClass);
 
-        outerDiv = container.get(0).getElementsByClass(nutrientValueClass); // main nutrient type
-        innerDiv = container.get(0).getElementsByTag("dl"); // sub
+        outerDiv = container.get(0).getElementsByClass(nutrientValueClass);
+        innerDiv = container.get(0).getElementsByTag("dl");
         list = innerDiv.get(0).getElementsByTag("dt");
         listElements = innerDiv.get(0).getElementsByTag("dd");
 
@@ -146,30 +147,13 @@ public class RecipeFinderController extends BaseController {
                 break;
             }
         }
-
         System.out.println("Main and Sub Nutrient values( in order so nth Main matches  nth Sub row ): \n");
-
         nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
-
-
     }
-
-
-    /**
-     * Can be done by pointing to the article-tabs tabs content-tabs class, and to the first li element a href element.text()
-     *
-     * @param url base url
-     * @return the cal page of given recipe
-     */
-//    private String nosaltyCalPage(String url) {
-//        final String addCal = "kaloria/";
-//        int pos = url.indexOf("recept/") + 7;
-//        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
-//
-//    }
 
     /**
      * Returns all of the main food categories in Nosalty
+     *
      * @param url Base url
      * @return in URL compatible format
      * @throws IOException
@@ -184,12 +168,12 @@ public class RecipeFinderController extends BaseController {
         for (Element e : innerDiv) {
             result.add(stripAccents(e.text()).replace(" ", "-").toLowerCase());
         }
-
         return result;
     }
 
     /**
      * Returns pharam input without accents
+     *
      * @param input
      * @return
      */
@@ -200,6 +184,8 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
+     * addCal can be scraped too
+     *
      * @param url base url
      * @return the nutrient page of given recipe
      */
@@ -208,6 +194,7 @@ public class RecipeFinderController extends BaseController {
         int pos = url.indexOf("recept/") + 7;
         return url.substring(0, pos) + addCal + url.substring(pos, url.length());
     }
+
 
     /**
      * Downloads a single recipe from the given "Streetkitchen" URL
@@ -254,13 +241,41 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
-     * Generates URL of specific recipes
+     * Generates URL of first
      */
-    private void generateRecipeURL() {
-
-
+    public void generateRecipeURL() throws IOException {
     }
 
+    /**
+     * Decides which firstPage method will be used, depending on the given URL
+     * @throws IOException
+     */
+    public void selectSite() throws IOException {
+        for (String base : Constant.basePages) {
+            if (base.toLowerCase().contains("nosalty")) {
+                getFirstPage(base);
+            }
+
+        }
+
+    }
+    /**
+     * Generates first page of
+     * @param base
+     * @return
+     * @throws IOException
+     */
+
+    public List getFirstPage(String base) throws IOException {
+        List result = new ArrayList();
+        for (Object category : getMainFoodCategoriesNOSALTY(Constant.mainCategories[0])) {
+
+            result.add(base.replace("*", (CharSequence) category));
+        }
+        System.out.println(result.toString());
+        return result;
+
+    }
 
     /**
      * First i need to get access to main categories containing  all the links to the specific recipes
@@ -268,7 +283,7 @@ public class RecipeFinderController extends BaseController {
      * @param categories NOTE: can be scraped too, than put in a collection, will not affect the method
      * @param baseURL    NOTE: maybe more elegant with regex?
      */
-    public String[] insertMainFoodCategoryToURL(String[] categories, String baseURL) {
+    public String[] addCcategoryToURL(String[] categories, String baseURL) {
         String[] mainCategoryURL = new String[40];
 
         for (int i = 0; i < categories.length; i++) {
@@ -276,7 +291,6 @@ public class RecipeFinderController extends BaseController {
         }
         for (String i : mainCategoryURL) {
             System.out.println(i);
-
         }
         return mainCategoryURL;
     }

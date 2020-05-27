@@ -14,12 +14,13 @@ public class test {
     public static void main(String[] args) throws IOException {
         test myTest = new test();
         RecipeFinderController controller = new RecipeFinderController();
-       // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
+        // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
         //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
         // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
         // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
-      //  controller.scrapeNosalty("https://www.nosalty.hu/recept/szilvalekvaros-kefires-kukoricaprosza");
-       controller.getMainFoodCategoriesNOSALTY("https://www.nosalty.hu/receptek/kategoria?order=abc&dir=0");
+        //  controller.scrapeNosalty("https://www.nosalty.hu/recept/szilvalekvaros-kefires-kukoricaprosza");
+       // controller.getMainFoodCategoriesNOSALTY(Constant.mainCategories[0]);
+        controller.generateRecipeURL();
     }
 
 
@@ -27,7 +28,7 @@ public class test {
         page = Jsoup.connect(url).get();
         // elements = page.select("h1").first(); name
         //elements = page.select("div.recept-elkeszites"); description
-       // elements = page.select("* a[href]"); // select all a with href
+        // elements = page.select("* a[href]"); // select all a with href
         elements = page.select("div.main-footer");
 
 

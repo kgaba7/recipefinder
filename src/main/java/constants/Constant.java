@@ -10,13 +10,13 @@ public class Constant {
         GRAM, KILO, LITER, TABLESPOON, PINCH, TEASPOON, WHOLE, HALF, QUARTER, THIRD
     }
 
-    public enum recipeCategory{
+    public enum recipeCategory {
         PASTA, BACKERY, SOUP, SALAD, DESSERT, SAUCE, VEGAN, DRINK, JUNK
 
     }
 
-    public static String nosaltyBaseURL = "https://www.nosalty.hu/receptek/kategoria/*/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc";
-    public static String[] nosaltyMainCategories = {"aprosutemeny", "befottek", "bonbonok"}; // TODO if this is the chosen method
+    public static String[] basePages = {"https://www.nosalty.hu/receptek/kategoria/*/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc"};
+    public static String[] mainCategories = {"https://www.nosalty.hu/receptek/kategoria?order=abc&dir=0"};
 
 
 }

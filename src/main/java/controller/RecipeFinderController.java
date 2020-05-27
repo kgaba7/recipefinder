@@ -4,7 +4,6 @@ import constants.Constant;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import view.RecipeFinderMainWindow;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -16,7 +15,29 @@ import java.util.List;
  * @author kissg on 2020. 05. 15.
  */
 public class RecipeFinderController extends BaseController {
-    private RecipeFinderMainWindow recipeFinderMainWindow;
+    /*
+    Ez az összes változóra igaz:
+    Ha nem használod őket csak 1 methodban, akkor nincs értelme létrehozni osztályszintű változót. Szimplán fölös.
+    Egyébként ezek jellemzően nem osztály szintű változók.
+    Mondok példát:
+
+    van pl a "page" változó. Az oké, hogy több methodban is használsz "page" változót, de az egyik methodban létrejött "page"-re nincs szükséged egy másik methodban, hogy te konkrétan ugyanazt használd.
+    Akkor van ilyennek értelme ha pl:
+
+    int num;
+
+    private void doSmthng()
+    {
+        this.num = [VALAMI];
+    }
+
+    private void print()
+    {
+        System.out.println(this.num) // mert neked PONTOSAN azt kell kiírni, amit előtte basztattál máshol
+    }
+
+    Másik dolog: ha már van osztályszintű változó, az jellemzően private. Leegyszerűsítve veheted úgy, hogy mindig az, leszámítva pár kivételes esetet
+     */
     private org.jsoup.nodes.Document page;
     Elements container;
     Elements outerDiv;
@@ -116,6 +137,17 @@ public class RecipeFinderController extends BaseController {
 
         innerDiv = page.getElementsByClass(diffClass);
         listElements = innerDiv.select("span > a");
+
+        // Fix
+
+        listElements = page.getElementsByClass(diffClass).select("span > a");
+
+        /*Magyarázat:
+            csak azért nem hozunk létre változót, hogy azt 1 helyen használjuk, aztán viszlát. Memória pazarlás (itt lényegtelen, de nagyban gondolkodva)
+
+            +1 ezt a Fix-et csak ide írtam le, de érvényes mindenhova
+         */
+        // Fix end
 
         System.out.println("DIFFICULTY: \n");
         System.out.println(listElements.text());

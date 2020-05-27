@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author kissg on 2020. 05. 15.
@@ -74,6 +75,51 @@ public class RecipeFinderMainWindow  extends Application {
     }
 
     /**
+     * Searches the downloaded recipes (downloaded by initialize()) based on the "Added ingredients" and the "Forbidden ingredients" lists + the basic settings (difficulty, type etc) and adds the result(s) to the "Results" list
+     */
+    private void search()
+    {
+        //controller-es method lesz
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Adds the selected ingredient to the "Forbidden ingredients" list
+     */
+    private void removeIngredient()
+    {
+        //itteni funkció
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Adds the selected ingredient to the "Added ingredients" list
+     */
+    private void addIngredient()
+    {
+        //itteni funkció
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Downloads 10-15-20 random recipes from Nosalty, for testing
+     */
+    private void initialize()
+    {
+        //controller-es method lesz
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Clears the "Added ingredients" and the "Forbidden ingredients" lists
+     */
+    private void reset()
+    {
+        //itteni funkció
+        throw new NotImplementedException();
+    }
+
+    /**
      * Exits the application
      */
     private void exit() {
@@ -125,4 +171,6 @@ public class RecipeFinderMainWindow  extends Application {
     private TextField txtfUrl;
     private Button btnExit;
     private Button btnScrape;
+
+    //TODO komponenseket létrehozni + inicializálni + handler-eket hozzáadni a gombokhoz stb. Mint a fentieknél (azok csak full példák, van amit fel lehet használni belőle, van ami full nem kell)
 }

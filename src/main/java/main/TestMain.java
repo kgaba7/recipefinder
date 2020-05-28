@@ -1,6 +1,7 @@
 package main;
 
 import controller.RecipeFinderController;
+import logger.RecipeFinderLogger;
 
 import java.io.IOException;
 
@@ -9,7 +10,8 @@ import java.io.IOException;
  */
 public class TestMain {
     public static void main(String[] args) {
-        RecipeFinderController controller = new RecipeFinderController();
+        RecipeFinderLogger logger = new RecipeFinderLogger();
+        RecipeFinderController controller = new RecipeFinderController(logger);
         try {
             controller.scrapeNosalty("");
         } catch (IOException e) {

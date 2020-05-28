@@ -1,11 +1,13 @@
 package controller;
 
 import constants.Constant;
+import logger.RecipeFinderLogger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import utils.Index;
+import utils.Messages;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -52,6 +54,10 @@ public class RecipeFinderController extends BaseController {
     Elements list;
     Elements listElements;
 
+    public RecipeFinderController(RecipeFinderLogger logger) {
+        super(logger);
+    }
+
     /**
      * Exits current program
      */
@@ -66,26 +72,33 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     public void downloadFactory(String url) throws IOException {
+        //TODO lehetne szebben is logolni, ez most csak hirtelen a példa kedvéért van így. Később refactor
         if (url.toLowerCase().contains("nosalty")) {
+            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoDownloadFactory(url));
             scrapeNosalty(url);
             return;
         }
         if (url.toLowerCase().contains("streetkitchen")) {
+            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoDownloadFactory(url));
             scrapeStreetkitchen(url);
             return;
         }
         if (url.toLowerCase().contains("receptneked")) {
+            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoDownloadFactory(url));
             scrapeReceptneked(url);
             return;
         }
         if (url.toLowerCase().contains("recepttar")) {
+            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoDownloadFactory(url));
             scrapeRecepttar(url);
             return;
         }
         if (url.toLowerCase().contains("mindmegette")) {
+            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoDownloadFactory(url));
             scrapeMindmegette(url);
             return;
         }
+        getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorDownloadFactory(url));
     }
 
     /**

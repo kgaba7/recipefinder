@@ -2,6 +2,7 @@ package temp;
 
 import constants.Constant;
 import controller.RecipeFinderController;
+import logger.RecipeFinderLogger;
 import model.Ingredient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +15,8 @@ import java.io.IOException;
 public class test {
     public static void main(String[] args) throws IOException {
         test myTest = new test();
-        RecipeFinderController controller = new RecipeFinderController();
+        RecipeFinderLogger logger = new RecipeFinderLogger();
+        RecipeFinderController controller = new RecipeFinderController(logger);
         // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
         //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
         // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);

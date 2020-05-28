@@ -7,6 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.Index;
 
 import java.io.IOException;
 
@@ -19,8 +20,9 @@ public class test {
         // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
         // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
         //  controller.scrapeNosalty("https://www.nosalty.hu/recept/szilvalekvaros-kefires-kukoricaprosza");
-       // controller.getMainFoodCategoriesNOSALTY(Constant.mainCategories[0]);
-        controller.generateRecipeURL();
+         controller.getMainFoodCategoriesNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
+     //   controller.getRecipeURL("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
+       // controller.getFirstPageNOSALTY(Constant.basePages[Index.NOSALTY_BASE]);
     }
 
 

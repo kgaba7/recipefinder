@@ -2,8 +2,10 @@ package controller;
 
 import constants.Constant;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.Index;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -15,6 +17,7 @@ import java.util.List;
  * @author kissg on 2020. 05. 15.
  */
 public class RecipeFinderController extends BaseController {
+
     /*
     Ez az összes változóra igaz:
     Ha nem használod őket csak 1 methodban, akkor nincs értelme létrehozni osztályszintű változót. Szimplán fölös.
@@ -38,7 +41,11 @@ public class RecipeFinderController extends BaseController {
 
     Másik dolog: ha már van osztályszintű változó, az jellemzően private. Leegyszerűsítve veheted úgy, hogy mindig az, leszámítva pár kivételes esetet
      */
-    private org.jsoup.nodes.Document page;
+
+    //private org.jsoup.nodes.Document page;
+
+    //elementsek lokálba OR eleminate vars with chain code!!
+
     Elements container;
     Elements outerDiv;
     Elements innerDiv;
@@ -87,15 +94,10 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     public void scrapeNosalty(String url) throws IOException {
-
-
+        Document page = Jsoup.connect(url).get();
         List<String> ingredients = new ArrayList<>();
-        List<String> nutrientValues = new ArrayList<>();
-        List<String> nutrientCaterories = new ArrayList<>();
-        StringBuilder nutrientsSB = new StringBuilder();
         HashMap<String, String> nutritionalValue = new HashMap<>();
         int count = 0;
-
 
         String classContent = "article-content";
         String classIngredients = "recept-hozzavalok";
@@ -108,9 +110,9 @@ public class RecipeFinderController extends BaseController {
         String nutrientValueClass = "column-block-title";
 
         page = Jsoup.connect(url).get();
-
+        // page localba
         //INGREDIENNTS
-        container = this.page.getElementsByClass(classIngredients);
+        container = page.getElementsByClass(classIngredients);
 
         list = container.get(0).getElementsByTag("ul");
         listElements = list.get(0).getElementsByTag("li");
@@ -191,15 +193,21 @@ public class RecipeFinderController extends BaseController {
      * @throws IOException
      */
     public List getMainFoodCategoriesNOSALTY(String url) throws IOException {
+        Document page = Jsoup.connect(url).get();
         List result = new ArrayList();
-        page = Jsoup.connect(url).get();
+        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc"; // to abc order, 100 recipe/page
 
-        outerDiv = page.getElementsByClass("article-list-items clearfix");
-        innerDiv = outerDiv.get(0).getElementsByClass("article-content");
-        list = innerDiv.get(0).getElementsByTag("span");
-        for (Element e : innerDiv) {
-            result.add(stripAccents(e.text()).replace(" ", "-").toLowerCase());
+        Elements main = page.select(".article-link");
+
+        for (Element element : main) {
+            result.add(Constant.trueBase[Index.NOSALTY_BASE] + element.attr("href") + add);
         }
+
+
+//        for (Element e : innerDiv) {
+//            result.add(stripAccents(e.text()).replace(" ", "-").toLowerCase());
+//        }
+        System.out.println(result.toString() + result.size());
         return result;
     }
 
@@ -234,6 +242,7 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     private void scrapeStreetkitchen(String url) throws IOException {
+        Document page = Jsoup.connect(url).get();
         page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
@@ -245,7 +254,7 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     private void scrapeReceptneked(String url) throws IOException {
-        page = Jsoup.connect(url).get();
+        Document page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
@@ -256,7 +265,7 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     private void scrapeRecepttar(String url) throws IOException {
-        page = Jsoup.connect(url).get();
+        Document page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
@@ -267,7 +276,7 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     private void scrapeMindmegette(String url) throws IOException {
-        page = Jsoup.connect(url).get();
+        Document page = Jsoup.connect(url).get();
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
@@ -275,56 +284,60 @@ public class RecipeFinderController extends BaseController {
     /**
      * Generates URL of first
      */
-    public void generateRecipeURL() throws IOException {
+    public void getRecipeURL(String page) throws IOException {
+        Document act = Jsoup.connect(page).get();
+//todo
+        System.out.println(act.select(".article-list, .article-list-horizontal, .article-img-wrapper > a[href]").get(91).attr("href"));
     }
 
     /**
      * Decides which firstPage method will be used, depending on the given URL
+     *
      * @throws IOException
      */
     public void selectSite() throws IOException {
         for (String base : Constant.basePages) {
             if (base.toLowerCase().contains("nosalty")) {
-                getFirstPage(base);
+                getFirstPageNOSALTY(base);
             }
 
         }
 
     }
+
     /**
      * Generates first page of
+     *
      * @param base
      * @return
      * @throws IOException
      */
 
-    public List getFirstPage(String base) throws IOException {
+    public List getFirstPageNOSALTY(String base) throws IOException {
         List result = new ArrayList();
-        for (Object category : getMainFoodCategoriesNOSALTY(Constant.mainCategories[0])) {
+        for (Object category : getMainFoodCategoriesNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE])) {
 
             result.add(base.replace("*", (CharSequence) category));
         }
         System.out.println(result.toString());
         return result;
-
     }
 
-    /**
-     * First i need to get access to main categories containing  all the links to the specific recipes
-     *
-     * @param categories NOTE: can be scraped too, than put in a collection, will not affect the method
-     * @param baseURL    NOTE: maybe more elegant with regex?
-     */
-    public String[] addCcategoryToURL(String[] categories, String baseURL) {
-        String[] mainCategoryURL = new String[40];
+    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?limit=100&view=small&order=abc
+    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc
 
-        for (int i = 0; i < categories.length; i++) {
-            mainCategoryURL[i] = baseURL.replace("*", categories[i]);
-        }
-        for (String i : mainCategoryURL) {
-            System.out.println(i);
-        }
-        return mainCategoryURL;
+    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&limit=100&view=small&order=abc
+    public List loopPagesNOSALTY(String first) {
+        List pages = new ArrayList();
+        /**
+         *
+         * OR
+         * page=
+         */
+//        final String addCal = "tapanyag/";
+//        int pos = url.indexOf("recept/") + 7;
+//        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
+        return pages;
     }
 
 

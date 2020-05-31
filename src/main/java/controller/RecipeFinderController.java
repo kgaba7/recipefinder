@@ -10,7 +10,6 @@ import utils.Index;
 import utils.Messages;
 
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,40 +18,6 @@ import java.util.List;
  * @author kissg on 2020. 05. 15.
  */
 public class RecipeFinderController extends BaseController {
-
-    /*
-    Ez az összes változóra igaz:
-    Ha nem használod őket csak 1 methodban, akkor nincs értelme létrehozni osztályszintű változót. Szimplán fölös.
-    Egyébként ezek jellemzően nem osztály szintű változók.
-    Mondok példát:
-
-    van pl a "page" változó. Az oké, hogy több methodban is használsz "page" változót, de az egyik methodban létrejött "page"-re nincs szükséged egy másik methodban, hogy te konkrétan ugyanazt használd.
-    Akkor van ilyennek értelme ha pl:
-
-    int num;
-
-    private void doSmthng()
-    {
-        this.num = [VALAMI];
-    }
-
-    private void print()
-    {
-        System.out.println(this.num) // mert neked PONTOSAN azt kell kiírni, amit előtte basztattál máshol
-    }
-
-    Másik dolog: ha már van osztályszintű változó, az jellemzően private. Leegyszerűsítve veheted úgy, hogy mindig az, leszámítva pár kivételes esetet
-     */
-
-    //private org.jsoup.nodes.Document page;
-
-    //elementsek lokálba OR eleminate vars with chain code!!
-
-    Elements container;
-    Elements outerDiv;
-    Elements innerDiv;
-    Elements list;
-    Elements listElements;
 
     public RecipeFinderController(RecipeFinderLogger logger) {
         super(logger);
@@ -111,90 +76,79 @@ public class RecipeFinderController extends BaseController {
         List<String> ingredients = new ArrayList<>();
         HashMap<String, String> nutritionalValue = new HashMap<>();
         int count = 0;
+        String classPic = ".ns-recept-img-layer img";
+        String classContent = ".article-content";
+        String classIngredients = ".recept-hozzavalok .column-block-content > .item-list";
+        String classPortion = "column grid-one, .dont-print .recept-hozzavalok .column-block-title";
+        String classDescription = "column-block recept-elkeszites dont-print";
+        String classTime = ".right-text, .dont-print";
+        String classDiff = ".floatright";
+        String classNutrientTable = ".tapanyagtartalom-tablazat";
+        String classNutrientType = ".column-block-title";
+        String classNutrientValue = ".column-block-content, .clearfix";
 
-        String classContent = "article-content";
-        String classIngredients = "recept-hozzavalok";
-        String classKcal = "recept-kaloriatartalom";
-        String descriptionClass = "column-block recept-elkeszites dont-print";
-        String recipeProperties = "column-block recept-receptjellemzok dont-print";
-        String timeClass = "right-text dont-print";
-        String diffClass = "floatright";
-        String nutrientTableClass = "tapanyagtartalom-tablazat";
-        String nutrientValueClass = "column-block-title";
+//PICTURE
+        System.out.println("Picture Link: \n");
+        String pic = page.select(classPic).attr("src");
+        System.out.println(pic);
 
-        page = Jsoup.connect(url).get();
-        // page localba
         //INGREDIENNTS
-        container = page.getElementsByClass(classIngredients);
-
-        list = container.get(0).getElementsByTag("ul");
-        listElements = list.get(0).getElementsByTag("li");
-
-        System.out.println("Hozzávalók:");
-        for (Element act : listElements) {
+        Elements content = page.select(classIngredients + " > ul").get(0).getElementsByTag("li");
+        for (Element act : content) {
             ingredients.add(act.text());
-
         }
+        System.out.println("Hozzávalók:");
         System.out.println(ingredients.toString());
 
-        //DESCRIPTION + (HYSTORTY OF RECIPE)
-        outerDiv = page.getElementsByClass(classContent);
-        Elements history = outerDiv.get(0).getElementsByTag("p");
+        //PORTIONS
+        Elements portion = page.select(classPortion + " span[itemprop=yield]");
+        System.out.println("Adag: \n");
+
+        System.out.println(portion.text());
 
 
-        outerDiv = page.getElementsByClass(descriptionClass);
-        list = outerDiv.get(0).getElementsByTag("ol");
+//        //DESCRIPTION + (HYSTORTY OF RECIPE)
+        Elements story = page.select(classContent + " p");
+        System.out.println("Story: \n");
+        System.out.println(story.text());
 
-        System.out.println("DESCRIPTION: \n");
-        System.out.println(history.text() + "\n" + list.text() + "\n");
+        System.out.println("Description: \n");
+        Elements description = page.getElementsByClass(classDescription).get(0).getElementsByTag("li");
+        int step = 1;
+        for (Element act : description) {
+            System.out.println(step + " " + act.text() + "\n");
+            step++;
+        }
 
 // DIFFICULTY
+        Elements difficulty = page.select(classDiff + " a[href]");
 
-        innerDiv = page.getElementsByClass(diffClass);
-        listElements = innerDiv.select("span > a");
+        System.out.println("Difficulty: \n");
+        System.out.println(difficulty.text());
 
-        // Fix
+////TIME
+        Element time = page.select(classTime + " span.bold").get(0);
 
-        listElements = page.getElementsByClass(diffClass).select("span > a");
+        System.out.println("Cook Time: \n");
+        System.out.println(time.text());
 
-        /*Magyarázat:
-            csak azért nem hozunk létre változót, hogy azt 1 helyen használjuk, aztán viszlát. Memória pazarlás (itt lényegtelen, de nagyban gondolkodva)
-
-            +1 ezt a Fix-et csak ide írtam le, de érvényes mindenhova
-         */
-        // Fix end
-
-        System.out.println("DIFFICULTY: \n");
-        System.out.println(listElements.text());
-
-//TIME
-        innerDiv = page.getElementsByClass(timeClass);
-        listElements = innerDiv.get(0).getElementsByTag("span");
-
-        System.out.println("Time: \n");
-        System.out.println(listElements.text());
 
         // NUTRIENTS
-        page = Jsoup.connect(nosaltyNutrientPage(url)).get();
+        page = Jsoup.connect(getNutrientPageNOSALTY(url)).get();
 
 
-        container = page.getElementsByClass(nutrientTableClass);
+        Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
+        Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
 
-        outerDiv = container.get(0).getElementsByClass(nutrientValueClass);
-        innerDiv = container.get(0).getElementsByTag("dl");
-        list = innerDiv.get(0).getElementsByTag("dt");
-        listElements = innerDiv.get(0).getElementsByTag("dd");
+        System.out.println("Nutrients: \n");
 
-        // todo add dt and dd to pairs IF the hashmap solution is not good !
-
-        for (Element main : outerDiv) {
-            for (int i = count; count < innerDiv.size(); count++) {
-                nutritionalValue.put(main.text(), innerDiv.get(i).text());
+        for (Element main : nutrientType) {
+            for (int i = count; count < nutrientValueList.size(); count++) {
+                nutritionalValue.put(main.text(), nutrientValueList.get(i).text());
                 count++;
                 break;
             }
         }
-        System.out.println("Main and Sub Nutrient values( in order so nth Main matches  nth Sub row ): \n");
         nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
     }
 
@@ -205,10 +159,10 @@ public class RecipeFinderController extends BaseController {
      * @return in URL compatible format
      * @throws IOException
      */
-    public List getMainFoodCategoriesNOSALTY(String url) throws IOException {
+    public List getCategoryBasePageNOSALTY(String url) throws IOException {
         Document page = Jsoup.connect(url).get();
         List result = new ArrayList();
-        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc"; // to abc order, 100 recipe/page
+        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc"; // makes list to: abc order, 100 recipe/page
 
         Elements main = page.select(".article-link");
 
@@ -216,10 +170,6 @@ public class RecipeFinderController extends BaseController {
             result.add(Constant.trueBase[Index.NOSALTY_BASE] + element.attr("href") + add);
         }
 
-
-//        for (Element e : innerDiv) {
-//            result.add(stripAccents(e.text()).replace(" ", "-").toLowerCase());
-//        }
         System.out.println(result.toString() + result.size());
         return result;
     }
@@ -230,24 +180,98 @@ public class RecipeFinderController extends BaseController {
      * @param input
      * @return
      */
-    public static String stripAccents(String input) {
-        return input == null ? null :
-                Normalizer.normalize(input, Normalizer.Form.NFD)
-                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-    }
+//    public static String stripAccents(String input) {
+//        return input == null ? null :
+//                Normalizer.normalize(input, Normalizer.Form.NFD)
+//                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+//    }
 
     /**
-     * addCal can be scraped too
-     *
      * @param url base url
      * @return the nutrient page of given recipe
      */
-    private String nosaltyNutrientPage(String url) {
+    public String getNutrientPageNOSALTY(String url) {
         final String addCal = "tapanyag/";
-        int pos = url.indexOf("recept/") + 7;
+        final String recipe = "recept/";
+        int pos = url.indexOf(recipe) + recipe.length();
+
+        System.out.println(url.substring(0, pos) + addCal + url.substring(pos, url.length()));
         return url.substring(0, pos) + addCal + url.substring(pos, url.length());
     }
 
+
+    /**
+     * Generates URL of recipes in a given page
+     */
+    public List getRecipeUrlNOSALTY(String page) throws IOException {
+        Document act = Jsoup.connect(page).get();
+        List<String> recipes = new ArrayList<>();
+
+
+        String lastPage = act.select("a.icon-pager-last").attr("href");
+        Elements recipe = act.select("div.kategoria-oldal, .kategoria-oldal-recept, .level-1, .nosalty-node-lista, .filters-enabled li.recept-118 .article-img-wrapper a[href].article-img-link");
+
+
+        //first element is empty, so count starts from 1
+        for (int i = 1; i < recipe.size(); i++) {
+            recipes.add(Constant.trueBase[Index.NOSALTY_BASE] += recipe.get(i).attr("href"));
+        }
+        System.out.println("Last: " + lastPage);
+        System.out.println(recipes.toString());
+        return recipes;
+    }
+
+    /**
+     * kvára el vagyok veszve bmeg xd
+     * @param page
+     * @return
+     * @throws IOException
+     */
+    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&limit=100&view=small&order=abc
+    public String incrementPageByOneNOSALTY(String page) throws IOException {
+        Document document = Jsoup.connect(page).get();
+        final String index = "=0%2C";
+        final String lastPageIndex = "&limit=100";
+
+        List<String> result = new ArrayList<>();
+        int pageNum = page.indexOf(index) + index.length();
+
+        String lastPage = document.select("a.icon-pager-last").attr("href");
+
+
+        StringBuilder newPage = new StringBuilder(page);
+
+        System.out.println(Constant.trueBase[Index.NOSALTY_BASE] += lastPage);
+        System.out.println(lastPage.indexOf(index) + index.length());
+        System.out.println(lastPage.charAt(lastPage.indexOf(index) + index.length()));
+        int count = 1;
+
+        String ch;
+//todo
+        do {
+            ch = Integer.toString(count);
+
+
+            result.add(newPage.replace(pageNum, pageNum + ch.length(), ch).toString());
+
+            count++;
+
+            System.out.println(newPage.toString());
+            System.out.println(lastPage);
+            System.out.println(ch.length());
+
+        } while (count < 32);
+
+        System.out.println(result.toString());
+
+        return page;
+    }
+
+//    public void loopPagesNOSALTY(String base) throws IOException {
+//        Document page = Jsoup.connect(base).get();
+//        String lastPage = page.select("a.icon-pager-last").attr("href");
+//
+//    }
 
     /**
      * Downloads a single recipe from the given "Streetkitchen" URL
@@ -293,66 +317,6 @@ public class RecipeFinderController extends BaseController {
         System.out.println(page.text());
         //throw new NotImplementedException();
     }
-
-    /**
-     * Generates URL of first
-     */
-    public void getRecipeURL(String page) throws IOException {
-        Document act = Jsoup.connect(page).get();
-//todo
-        System.out.println(act.select(".article-list, .article-list-horizontal, .article-img-wrapper > a[href]").get(91).attr("href"));
-    }
-
-    /**
-     * Decides which firstPage method will be used, depending on the given URL
-     *
-     * @throws IOException
-     */
-    public void selectSite() throws IOException {
-        for (String base : Constant.basePages) {
-            if (base.toLowerCase().contains("nosalty")) {
-                getFirstPageNOSALTY(base);
-            }
-
-        }
-
-    }
-
-    /**
-     * Generates first page of
-     *
-     * @param base
-     * @return
-     * @throws IOException
-     */
-
-    public List getFirstPageNOSALTY(String base) throws IOException {
-        List result = new ArrayList();
-        for (Object category : getMainFoodCategoriesNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE])) {
-
-            result.add(base.replace("*", (CharSequence) category));
-        }
-        System.out.println(result.toString());
-        return result;
-    }
-
-    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?limit=100&view=small&order=abc
-    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc
-
-    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&limit=100&view=small&order=abc
-    public List loopPagesNOSALTY(String first) {
-        List pages = new ArrayList();
-        /**
-         *
-         * OR
-         * page=
-         */
-//        final String addCal = "tapanyag/";
-//        int pos = url.indexOf("recept/") + 7;
-//        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
-        return pages;
-    }
-
 
     /**
      * to iterate trough all pages in main food categories, given by the site itself, I need these methods:
@@ -501,18 +465,20 @@ public class RecipeFinderController extends BaseController {
      * in aa href
      * todo access recipe details
      */
+    /**
+     * COOKPAD.hu
+     *
+     * @throws IOException
+     */
 
 
-    public void elapsedTimeTest() {
+    public void elapsedTimeTest() throws IOException {
         try {
             long start = System.currentTimeMillis();
-            /*
-            kód kód
-            kód stb stb
-             */
-            Thread.sleep(2000);//ez csak azért van itt, hogy "elteljen" 2 sec
+
+            Thread.sleep(2000);
             System.out.println(getElapsedTime(System.currentTimeMillis() - start));
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

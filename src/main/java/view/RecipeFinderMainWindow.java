@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import logger.RecipeFinderLogger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -19,9 +20,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class RecipeFinderMainWindow  extends Application {
     private RecipeFinderController controller;
+    private RecipeFinderLogger logger;
 
     public void start(Stage primaryStage) throws Exception {
-        this.controller = new RecipeFinderController();
+        this.controller = new RecipeFinderController(logger);
         initComponents();
         addHandlersToButtons();
         GridPane paneContainer, paneTextfields, paneButtons;

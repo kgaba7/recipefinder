@@ -16,7 +16,7 @@ public class Recipe {
     private boolean isFavorite;
     private String URL;
     private boolean isUserMade;
-    private int servings;
+    private int portions;
     private File picture;
 
     public String getName() {
@@ -99,12 +99,12 @@ public class Recipe {
         isUserMade = userMade;
     }
 
-    public int getServings() {
-        return servings;
+    public int getPortions() {
+        return portions;
     }
 
-    public void setServings(int servings) {
-        this.servings = servings;
+    public void setPortions(int portions) {
+        this.portions = portions;
     }
 
     public File getPicture() {

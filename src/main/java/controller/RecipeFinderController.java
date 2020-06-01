@@ -92,7 +92,7 @@ public class RecipeFinderController extends BaseController {
             System.out.println("Picture Link: \n");
             String pic = page.select(classPic).attr("src");
             System.out.println(pic);
-            //INGREDIENNTS
+            //INGREDIENTS
             Elements content = page.select(classIngredients + " > ul").get(0).getElementsByTag("li");
             for (Element act : content) {
                 ingredients.add(act.text());
@@ -143,41 +143,27 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
-     * Returns all of the main food categories in Nosalty
+     * Returns list of first pages, in every main food category in the site: nosalty.hu
      *
      * @param url Base url
      * @return in URL compatible format
      * @throws IOException
      */
-
-    public List getCategoryBasePageNOSALTY(String url) throws IOException {
+    public List getFirstPageNOSALTY(String url) throws IOException {
         Document page = Jsoup.connect(url).get();
         List result = new ArrayList();
-        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc";   // makes list to: abc order, 100 recipe/page
+        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc"; // makes list to: abc order, 100 recipe/page
 
         Elements main = page.select(".article-link");
 
         for (Element element : main) {
             result.add(Constant.trueBase[Index.NOSALTY_BASE] + element.attr("href") + add);
         }
-
         System.out.println(result.toString() + result.size());
         return result;
     }
-
     /**
-     * Returns pharam input without accents
-     *
-     * @param input
-     * @return
-     */
-//    public static String stripAccents(String input) {
-//        return input == null ? null :
-//                Normalizer.normalize(input, Normalizer.Form.NFD)
-//                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-//    }
-
-    /**
+     * Returns the nutrient page of any given recipe
      * @param url base url
      * @return the nutrient page of given recipe
      */
@@ -190,9 +176,8 @@ public class RecipeFinderController extends BaseController {
         return url.substring(0, pos) + addCal + url.substring(pos, url.length());
     }
 
-
     /**
-     * Returns all recipe URLs from given page
+     * Returns list of all recipe URLs from given page
      */
     public List getRecipeUrlNOSALTY(String page) throws IOException {
         Document act = Jsoup.connect(page).get();
@@ -205,20 +190,17 @@ public class RecipeFinderController extends BaseController {
         for (int i = 1; i < recipe.size(); i++) {
             recipes.add(Constant.trueBase[Index.NOSALTY_BASE] + recipe.get(i).attr("href"));
         }
-
         System.out.println("Last: " + lastPage);
         System.out.println(recipes.toString());
         return recipes;
     }
-
     /**
-     * Loops all pages in given category
+     * Loops all pages in given food category, stops at the last one
      *
      * @param page
      * @return
      * @throws IOException
      */
-    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0 &limit=100&view=small&order=abc
     public String loopPagesNOSALTY(String page) throws IOException {
         Document document = Jsoup.connect(page).get();
         final String index = "=0%2C";
@@ -244,12 +226,6 @@ public class RecipeFinderController extends BaseController {
         return page;
     }
 
-//    public void loopPagesNOSALTY(String base) throws IOException {
-//        Document page = Jsoup.connect(base).get();
-//        String lastPage = page.select("a.icon-pager-last").attr("href");
-//
-//    }
-
     /**
      * Downloads a single recipe from the given "Streetkitchen" URL
      *
@@ -259,7 +235,6 @@ public class RecipeFinderController extends BaseController {
         Document page = Jsoup.connect(url).get();
         page = Jsoup.connect(url).get();
         System.out.println(page.text());
-        //throw new NotImplementedException();
     }
 
     /**
@@ -270,7 +245,7 @@ public class RecipeFinderController extends BaseController {
     private void scrapeReceptneked(String url) throws IOException {
         Document page = Jsoup.connect(url).get();
         System.out.println(page.text());
-        //throw new NotImplementedException();
+
     }
 
     /**
@@ -292,7 +267,6 @@ public class RecipeFinderController extends BaseController {
     private void scrapeMindmegette(String url) throws IOException {
         Document page = Jsoup.connect(url).get();
         System.out.println(page.text());
-        //throw new NotImplementedException();
     }
 
     /**

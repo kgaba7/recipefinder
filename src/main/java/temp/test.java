@@ -17,17 +17,14 @@ public class test {
         test myTest = new test();
         RecipeFinderLogger logger = new RecipeFinderLogger();
         RecipeFinderController controller = new RecipeFinderController(logger);
-        // myTest.getRecInfoNOSALTY("https://www.nosalty.hu/recept/bazsalikomos-tejszines-csirkemell-rozmaringos-sult-burgonyaval");
-        //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
-        // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
-        // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
-        //controller.scrapeNosalty("https://www.nosalty.hu/recept/gorhe-lizziy-konyhajabol");
 
-//         controller.getCategoryBasePageNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
-//         controller.getNutrientPageNOSALTY("https://www.nosalty.hu/recept/fokhagymas-malacsult-burgonyaval");
-        // controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/husetelek/osszes?page=0%2C79&limit=100&view=small&order=abc");
-//
-        controller.loopPagesNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
+
+//        controller.scrapeNosalty("https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval");
+//        controller.getNutrientPageNOSALTY("https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval");
+//        controller.getFirstPageNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
+//        controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
+//        controller.loopPagesNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
+
 
     }
 

@@ -20,57 +20,10 @@ public class test {
 
 
 //        controller.scrapeNosalty("https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval");
-//        controller.getNutrientPageNOSALTY("https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval");
 //        controller.getFirstPageNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
 //        controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
 //        controller.loopPagesNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
 
 
     }
-
-
-    public void getRecInfoNOSALTY(String url) throws IOException {
-        page = Jsoup.connect(url).get();
-        // elements = page.select("h1").first(); name
-        //elements = page.select("div.recept-elkeszites"); description
-        // elements = page.select("* a[href]"); // select all a with href
-        elements = page.select("div.main-footer");
-
-
-        System.out.println(elements.text());
-
-
-    }
-
-    public void getRecInfoRECNEKED(String url) {
-
-    }
-
-    //wtf is this shit tho
-    public void getRecInfoSTREET(String url) throws IOException {
-        page = Jsoup.connect(url).get();
-        //  elements = page.select("div.row > div.col-content-item-small.archive-col-1");
-        elements = page.select("div.row > div.col-content-item-small");
-
-        System.out.println(elements.text());
-
-    }
-
-
-    Document page;
-    Element element;
-    Elements elements;
-
-    private String name;  // check
-    private Ingredient ingredients;
-    private String description;  // check
-    private String calories;
-    private double cookTime;
-    private int recipeID;
-    private double difficulty;
-    private boolean isFavorite;
-    private String URL;
-    private boolean isUserMade;
-    private int servings;
-
 }

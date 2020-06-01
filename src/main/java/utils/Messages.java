@@ -14,4 +14,12 @@ public class Messages {
     public static String getErrorDownloadFactory(String url) {
         return ERROR_DOWNLOAD_FACTORY + url;
     }
+
+    public static String getInfoScrapeNOSALTY(String url) {
+        return INFO_DOWNLOAD_FACTORY + url + "\"!";
+    }
+
+    public static String getErrorScrapeNOSALTY(String url) {
+        return ERROR_DOWNLOAD_FACTORY + url;
+    }
 }

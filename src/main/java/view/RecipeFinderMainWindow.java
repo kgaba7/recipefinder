@@ -37,7 +37,7 @@ public class RecipeFinderMainWindow  extends Application {
         paneContainer.add(paneTextfields, 0, 0);
         paneContainer.add(paneButtons, 0, 1);
 
-        //TODO set size
+
         Scene scene = new Scene(paneContainer, screenBounds.getWidth()/2, screenBounds.getHeight()/3);
 
 

@@ -30,6 +30,7 @@ public class RecipeFinderController extends BaseController {
         System.exit(0);
         // throw new NotImplementedException();
     }
+//todo try catch, logger, 2 methods
 
     /**
      * Decides which scaping method will be used, depending on the given URL
@@ -72,7 +73,6 @@ public class RecipeFinderController extends BaseController {
      * @param url URL
      */
     public void scrapeNosalty(String url) throws IOException {
-        Document page = Jsoup.connect(url).get();
         List<String> ingredients = new ArrayList<>();
         HashMap<String, String> nutritionalValue = new HashMap<>();
         int count = 0;
@@ -86,70 +86,60 @@ public class RecipeFinderController extends BaseController {
         String classNutrientTable = ".tapanyagtartalom-tablazat";
         String classNutrientType = ".column-block-title";
         String classNutrientValue = ".column-block-content, .clearfix";
-
-//PICTURE
-        System.out.println("Picture Link: \n");
-        String pic = page.select(classPic).attr("src");
-        System.out.println(pic);
-
-        //INGREDIENNTS
-        Elements content = page.select(classIngredients + " > ul").get(0).getElementsByTag("li");
-        for (Element act : content) {
-            ingredients.add(act.text());
-        }
-        System.out.println("Hozzávalók:");
-        System.out.println(ingredients.toString());
-
-        //PORTIONS
-        Elements portion = page.select(classPortion + " span[itemprop=yield]");
-        System.out.println("Adag: \n");
-
-        System.out.println(portion.text());
-
-
-//        //DESCRIPTION + (HYSTORTY OF RECIPE)
-        Elements story = page.select(classContent + " p");
-        System.out.println("Story: \n");
-        System.out.println(story.text());
-
-        System.out.println("Description: \n");
-        Elements description = page.getElementsByClass(classDescription).get(0).getElementsByTag("li");
-        int step = 1;
-        for (Element act : description) {
-            System.out.println(step + " " + act.text() + "\n");
-            step++;
-        }
-
-// DIFFICULTY
-        Elements difficulty = page.select(classDiff + " a[href]");
-
-        System.out.println("Difficulty: \n");
-        System.out.println(difficulty.text());
-
-////TIME
-        Element time = page.select(classTime + " span.bold").get(0);
-
-        System.out.println("Cook Time: \n");
-        System.out.println(time.text());
-
-
-        // NUTRIENTS
-        page = Jsoup.connect(getNutrientPageNOSALTY(url)).get();
-
-
-        Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
-        Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
-
-        System.out.println("Nutrients: \n");
-
-        for (Element main : nutrientType) {
-            for (int i = count; count < nutrientValueList.size(); count++) {
-                nutritionalValue.put(main.text(), nutrientValueList.get(i).text());
-                count++;
-                break;
+        try {
+            Document page = Jsoup.connect(url).get();
+            //PICTURE
+            System.out.println("Picture Link: \n");
+            String pic = page.select(classPic).attr("src");
+            System.out.println(pic);
+            //INGREDIENNTS
+            Elements content = page.select(classIngredients + " > ul").get(0).getElementsByTag("li");
+            for (Element act : content) {
+                ingredients.add(act.text());
             }
+            System.out.println("Hozzávalók:");
+            System.out.println(ingredients.toString());
+            //PORTIONS
+            Elements portion = page.select(classPortion + " span[itemprop=yield]");
+            System.out.println("Adag: \n");
+            System.out.println(portion.text());
+//        //DESCRIPTION + (HYSTORTY OF RECIPE)
+            Elements story = page.select(classContent + " p");
+            System.out.println("Story: \n");
+            System.out.println(story.text());
+            System.out.println("Description: \n");
+            Elements description = page.getElementsByClass(classDescription).get(0).getElementsByTag("li");
+            int step = 1;
+            for (Element act : description) {
+                System.out.println(step + " " + act.text() + "\n");
+                step++;
+            }
+// DIFFICULTY
+            Elements difficulty = page.select(classDiff + " a[href]");
+            System.out.println("Difficulty: \n");
+            System.out.println(difficulty.text());
+////TIME
+            Element time = page.select(classTime + " span.bold").get(0);
+            System.out.println("Cook Time: \n");
+            System.out.println(time.text());
+            // NUTRIENTS
+            page = Jsoup.connect(getNutrientPageNOSALTY(url)).get();
+            Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
+            Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
+            System.out.println("Nutrients: \n");
+            for (Element main : nutrientType) {
+                for (int i = count; count < nutrientValueList.size(); count++) {
+                    nutritionalValue.put(main.text(), nutrientValueList.get(i).text());
+                    count++;
+                    break;
+                }
+            }
+            nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
+        } catch (Exception e) {
+            e.printStackTrace();
+            getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeNOSALTY(url));
         }
-        nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
+        getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeNOSALTY(url));
     }
 
     /**
@@ -159,10 +149,11 @@ public class RecipeFinderController extends BaseController {
      * @return in URL compatible format
      * @throws IOException
      */
+
     public List getCategoryBasePageNOSALTY(String url) throws IOException {
         Document page = Jsoup.connect(url).get();
         List result = new ArrayList();
-        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc"; // makes list to: abc order, 100 recipe/page
+        String add = "/osszes?page=0%2C0&limit=100&view=small&order=abc";   // makes list to: abc order, 100 recipe/page
 
         Elements main = page.select(".article-link");
 
@@ -201,69 +192,55 @@ public class RecipeFinderController extends BaseController {
 
 
     /**
-     * Generates URL of recipes in a given page
+     * Returns all recipe URLs from given page
      */
     public List getRecipeUrlNOSALTY(String page) throws IOException {
         Document act = Jsoup.connect(page).get();
         List<String> recipes = new ArrayList<>();
-
-
+        //todo
         String lastPage = act.select("a.icon-pager-last").attr("href");
         Elements recipe = act.select("div.kategoria-oldal, .kategoria-oldal-recept, .level-1, .nosalty-node-lista, .filters-enabled li.recept-118 .article-img-wrapper a[href].article-img-link");
 
-
         //first element is empty, so count starts from 1
         for (int i = 1; i < recipe.size(); i++) {
-            recipes.add(Constant.trueBase[Index.NOSALTY_BASE] += recipe.get(i).attr("href"));
+            recipes.add(Constant.trueBase[Index.NOSALTY_BASE] + recipe.get(i).attr("href"));
         }
+
         System.out.println("Last: " + lastPage);
         System.out.println(recipes.toString());
         return recipes;
     }
 
     /**
-     * kvára el vagyok veszve bmeg xd
+     * Loops all pages in given category
+     *
      * @param page
      * @return
      * @throws IOException
      */
-    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&limit=100&view=small&order=abc
-    public String incrementPageByOneNOSALTY(String page) throws IOException {
+    //https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0 &limit=100&view=small&order=abc
+    public String loopPagesNOSALTY(String page) throws IOException {
         Document document = Jsoup.connect(page).get();
         final String index = "=0%2C";
-        final String lastPageIndex = "&limit=100";
-
         List<String> result = new ArrayList<>();
         int pageNum = page.indexOf(index) + index.length();
-
         String lastPage = document.select("a.icon-pager-last").attr("href");
 
+        String subEnd = page.substring(pageNum + 1, page.length());
+        String subBegin = page.substring(0, page.indexOf(subEnd) - 1);
 
-        StringBuilder newPage = new StringBuilder(page);
-
-        System.out.println(Constant.trueBase[Index.NOSALTY_BASE] += lastPage);
-        System.out.println(lastPage.indexOf(index) + index.length());
-        System.out.println(lastPage.charAt(lastPage.indexOf(index) + index.length()));
-        int count = 1;
-
+        int count = 0;
         String ch;
-//todo
+        String currentPage;
         do {
-            ch = Integer.toString(count);
-
-
-            result.add(newPage.replace(pageNum, pageNum + ch.length(), ch).toString());
-
+            ch = String.valueOf(count);
+            currentPage = subBegin + ch + subEnd;
+            result.add(currentPage);
             count++;
 
-            System.out.println(newPage.toString());
-            System.out.println(lastPage);
-            System.out.println(ch.length());
-
-        } while (count < 32);
+        } while (!currentPage.contains(lastPage));
 
         System.out.println(result.toString());
-
         return page;
     }
 
@@ -326,41 +303,6 @@ public class RecipeFinderController extends BaseController {
      * <p>
      * Basically modify a BASE URL in every website, to get access to all pages containing the links of all recipes
      */
-
-//    /**
-//     * @param base      URL to modify
-//     * @param additions String array to be inserted
-//     * @param leftBound &  @param rightBound  between these characters the additios will be inserted
-//     */
-//    public void modifyURL(String base, String[] additions, char leftBound, char rightBound) {
-//
-//    }
-//
-//    /**
-//     * @param base      URL to modify
-//     * @param addition  String to be inserted
-//     * @param leftBound &  @param rightBound  between these characters the additios will be inserted
-//     */
-//    public void modifyURL(String base, String addition, char leftBound, char rightBound) {
-//
-//    }
-
-
-//    /**
-//     * I need to insert addition String between "?" AND "l"
-//     * maybe more elegant with regex
-//     * maybe with insertAfter ?
-//     * STRINGBUFFER ?
-//     * another method?
-//     */
-//    public String iteratePagesIFBaseURLIsDifferentInFirstPage(String baseURL, String addition, char leftBound, char rightBound) {
-//        StringBuilder result = new StringBuilder(baseURL);
-//        int page = 1;
-//        result.insert(baseURL.indexOf(leftBound), leftBound + addition);
-//
-//        System.out.println(result);
-//        return result.toString();
-//    }
 
 
     /** NOSALTY:

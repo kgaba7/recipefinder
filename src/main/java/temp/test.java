@@ -21,13 +21,13 @@ public class test {
         //  myTest.getRecInfoSTREET("https://streetkitchen.hu/category/receptek/");
         // controller.insertMainFoodCategoryToURL(Constant.nosaltyMainCategories, Constant.nosaltyBaseURL);
         // controller.iteratePages("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&%3Flimit=100&view=small&order=abc");
-         // controller.scrapeNosalty("https://www.nosalty.hu/recept/gorhe-lizziy-konyhajabol");
+        //controller.scrapeNosalty("https://www.nosalty.hu/recept/gorhe-lizziy-konyhajabol");
 
 //         controller.getCategoryBasePageNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
 //         controller.getNutrientPageNOSALTY("https://www.nosalty.hu/recept/fokhagymas-malacsult-burgonyaval");
-//         controller.getRecipeUrlNOSALTY("https://www.nosalty.hu//receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
-
-         controller.incrementPageByOneNOSALTY("https://www.nosalty.hu//receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
+        // controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/husetelek/osszes?page=0%2C79&limit=100&view=small&order=abc");
+//
+        controller.loopPagesNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
 
     }
 

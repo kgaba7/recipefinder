@@ -2,6 +2,7 @@ package main;
 
 import controller.RecipeFinderController;
 import logger.RecipeFinderLogger;
+import model.Ingredient;
 
 import java.io.IOException;
 
@@ -12,10 +13,6 @@ public class TestMain {
     public static void main(String[] args) {
         RecipeFinderLogger logger = new RecipeFinderLogger();
         RecipeFinderController controller = new RecipeFinderController(logger);
-        try {
-            controller.scrapeNosalty("");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        controller.scrapeNosaltyKG("");
     }
 }

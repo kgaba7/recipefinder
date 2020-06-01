@@ -139,7 +139,79 @@ public class RecipeFinderController extends BaseController {
             e.printStackTrace();
             getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeNOSALTY(url));
         }
+        //Ez nincs jó helyen. Ha hibára fut és catch ágba lép, ez a bejegyzés akkor is létre fog jönni a log-ban, mert catch után ide lép ki. Viszont ha járt catch-ben, akkor nem lehet olyan üzenet, hogy minden OK volt...
         getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeNOSALTY(url));
+    }
+
+    public void scrapeNosaltyKG(String url) {
+        url = "https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval";//csak teszt miatt, így egyszerűbb
+        String classIngredients = "recept-hozzavalok";
+        String classRecipe = "recept-elkeszites";
+        String classIngredientsList = "item-list";
+        String classDifficulty = ".floatright a[href]";
+        String classTime = ".right-text, .dont-print span.bold";
+        boolean isBaseUrlOk = false;
+        try {
+            Document page = Jsoup.connect(url).get();
+
+            //Hozzávalók
+            System.out.println("Hozzávalók: ");
+            printChildElementsByTag(page.getElementsByClass(classIngredients).get(0).getElementsByClass(classIngredientsList), "li");
+            System.out.println("-----------");
+
+            //Elkészítés
+            System.out.println("Elkészítés: ");
+            printChildElementsByTag(page.getElementsByClass(classRecipe), "li");
+            System.out.println("-----------");
+
+            //Nehézség
+            System.out.println("Nehézség: ");
+            printChildElementsByTag(page.select(classDifficulty), "a");
+            System.out.println("-----------");
+
+            //Idő
+            System.out.println("Idő: ");
+            printChildElementsByTag(page.select(classTime), "span");
+            System.out.println("-----------");
+            isBaseUrlOk = true;
+
+            //Tápanyagok
+            System.out.println("Tápanyagok: ");
+            getNosaltyRecipeNutrients(getNutrientPageNOSALTY(url));
+            System.out.println("-----------");
+
+            //todo log OK
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (isBaseUrlOk) {
+                //todo log Jsoup.connect error nutrients
+            } else {
+                //todo log Jsoup.connect error base
+            }
+        } catch (Exception e) {
+            if (isBaseUrlOk) {
+                //todo log error nutrients
+            } else {
+                //todo log error base
+            }
+        }
+    }
+
+    private void printChildElementsByTag(Elements elements, String tag) throws Exception{
+        for (Element e1 : elements) {
+            Elements list = e1.getElementsByTag(tag);
+            for (Element e2 : list) {
+                System.out.println(e2.text());
+            }
+        }
+    }
+
+    private void getNosaltyRecipeNutrients(String url) throws IOException, Exception {
+        String classNutrients = "tapanyagtartalom-tablazat";
+        String classNutrientsList = "column-block";
+        Document page = Jsoup.connect(url).get();
+        Elements elements = page.getElementsByClass(classNutrients);
+        printChildElementsByTag(elements.get(0).getElementsByClass(classNutrientsList), "dl");
     }
 
     /**
@@ -162,18 +234,20 @@ public class RecipeFinderController extends BaseController {
         System.out.println(result.toString() + result.size());
         return result;
     }
+
     /**
      * Returns the nutrient page of any given recipe
+     *
      * @param url base url
      * @return the nutrient page of given recipe
      */
-    public String getNutrientPageNOSALTY(String url) {
+    private String getNutrientPageNOSALTY(String url) {
         final String addCal = "tapanyag/";
         final String recipe = "recept/";
         int pos = url.indexOf(recipe) + recipe.length();
 
-        System.out.println(url.substring(0, pos) + addCal + url.substring(pos, url.length()));
-        return url.substring(0, pos) + addCal + url.substring(pos, url.length());
+        System.out.println(url.substring(0, pos) + addCal + url.substring(pos));
+        return url.substring(0, pos) + addCal + url.substring(pos);
     }
 
     /**
@@ -194,6 +268,7 @@ public class RecipeFinderController extends BaseController {
         System.out.println(recipes.toString());
         return recipes;
     }
+
     /**
      * Loops all pages in given food category, stops at the last one
      *

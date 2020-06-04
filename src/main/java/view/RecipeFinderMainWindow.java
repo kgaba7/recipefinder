@@ -14,6 +14,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import logger.RecipeFinderLogger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import view.utils.ComponentDimensions;
 
 /**
  * @author kissg on 2020. 05. 15.
@@ -38,7 +39,7 @@ public class RecipeFinderMainWindow  extends Application {
         paneContainer.add(paneButtons, 0, 1);
 
 
-        Scene scene = new Scene(paneContainer, screenBounds.getWidth()/2, screenBounds.getHeight()/3);
+        Scene scene = new Scene(paneContainer, ComponentDimensions.WINDOW_WIDTH, ComponentDimensions.WINDOW_HEIGHT);
 
 
         primaryStage.setTitle("RecipeNosalty Finder");
@@ -159,20 +160,14 @@ public class RecipeFinderMainWindow  extends Application {
         this.btnExit = new Button("Exit");
         this.btnScrape = new Button("Download");
 
-        screenBounds = Screen.getPrimary().getBounds();
-
-
-        //TODO set sizes CHECK? vagy nem a scene sizera gondoltál?
+        this.lblUrl.setPrefSize(ComponentDimensions.LABEL_WIDTH, ComponentDimensions.COMPONENT_HEIGHT);
+        this.txtfUrl.setPrefSize(ComponentDimensions.TEXTFIELD_WIDTH, ComponentDimensions.COMPONENT_HEIGHT);
+        this.btnExit.setPrefSize(ComponentDimensions.BUTTON_WIDTH, ComponentDimensions.COMPONENT_HEIGHT);
+        this.btnScrape.setPrefSize(ComponentDimensions.BUTTON_WIDTH, ComponentDimensions.COMPONENT_HEIGHT);
     }
 
-    /**
-     *  screenBounds gets primary screen width and height
-     */
-    private Rectangle2D screenBounds;
     private Label lblUrl;
     private TextField txtfUrl;
     private Button btnExit;
     private Button btnScrape;
-
-    //TODO komponenseket létrehozni + inicializálni + handler-eket hozzáadni a gombokhoz stb. Mint a fentieknél (azok csak full példák, van amit fel lehet használni belőle, van ami full nem kell)
 }

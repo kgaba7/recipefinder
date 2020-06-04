@@ -19,5 +19,7 @@ public class Constant {
     public static final String[] basePages = {"https://www.nosalty.hu/receptek/kategoria/*/osszes?page=0%2C0&limit=100&view=small&order=abc"};
     public static final String[] mainCategoriesURL = {"https://www.nosalty.hu/receptek/kategoria?order=abc&dir=0"};
     public static final String[] trueBase = {"https://www.nosalty.hu/"};
+    public static final String[] ingredientBase = {"https://www.nosalty.hu/alapanyagok"};
+
 
 }

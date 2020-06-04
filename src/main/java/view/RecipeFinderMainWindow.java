@@ -41,7 +41,7 @@ public class RecipeFinderMainWindow  extends Application {
         Scene scene = new Scene(paneContainer, screenBounds.getWidth()/2, screenBounds.getHeight()/3);
 
 
-        primaryStage.setTitle("Recipe Finder");
+        primaryStage.setTitle("RecipeNosalty Finder");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();

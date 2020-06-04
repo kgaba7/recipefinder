@@ -2,9 +2,6 @@ package main;
 
 import controller.RecipeFinderController;
 import logger.RecipeFinderLogger;
-import model.Ingredient;
-
-import java.io.IOException;
 
 /**
  * @author kissg on 2020. 05. 21.

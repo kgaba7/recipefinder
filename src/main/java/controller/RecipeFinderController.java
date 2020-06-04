@@ -331,7 +331,7 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
-     * Scrapes nosalty Ingredient
+     * Scrapes nosalty IngredientNosalty
      * @param url
      * @throws IOException
      */
@@ -507,7 +507,7 @@ public class RecipeFinderController extends BaseController {
      * get food names of first page
      * add name to https://www.nosalty.hu/ base URL
      * get food details
-     * todo how to scrape secific recipe information for the Object: Recipe
+     * todo how to scrape secific recipe information for the Object: RecipeNosalty
      *
      *
      *

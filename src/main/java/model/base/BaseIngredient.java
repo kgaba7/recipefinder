@@ -1,19 +1,17 @@
-package model;
+package model.base;
 
 import constants.Constant;
+import model.common.Nutrient;
 
 /**
- * @author kissg on 2020. 05. 15.
+ * @author kissg on 2020. 06. 04.
  */
-public class Ingredient {
-
+public class BaseIngredient {
     private String name;
     private double quantity;
-    private boolean isAvalible;
-
+    private Nutrient nutrient;
     private Constant.ingredientType type;
     private Constant.ingredientQuantityType quantityType;
-
 
     public String getName() {
         return name;
@@ -31,12 +29,12 @@ public class Ingredient {
         this.quantity = quantity;
     }
 
-    public boolean isAvalible() {
-        return isAvalible;
+    public Nutrient getNutrient() {
+        return nutrient;
     }
 
-    public void setAvalible(boolean avalible) {
-        isAvalible = avalible;
+    public void setNutrient(Nutrient nutrient) {
+        this.nutrient = nutrient;
     }
 
     public Constant.ingredientType getType() {

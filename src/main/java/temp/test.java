@@ -3,11 +3,6 @@ package temp;
 import constants.Constant;
 import controller.RecipeFinderController;
 import logger.RecipeFinderLogger;
-import model.Ingredient;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import utils.Index;
 
 import java.io.IOException;

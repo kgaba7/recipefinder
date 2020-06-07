@@ -2,6 +2,8 @@ package controller;
 
 import constants.Constant;
 import logger.RecipeFinderLogger;
+import model.base.BaseIngredient;
+import model.common.Nutrient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,7 +11,7 @@ import org.jsoup.select.Elements;
 import utils.Index;
 import utils.Messages;
 
-import javax.print.Doc;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,6 +86,8 @@ public class RecipeFinderController extends BaseController {
         int count = 0;
         String classPic = ".ns-recept-img-layer img";
         String classContent = ".article-content";
+        String ingrediclass = ".article-content";
+
         String classIngredients = "column-block-content";
         String classPortion = "column grid-one, .dont-print .recept-hozzavalok .column-block-title";
         String classDescription = "column-block recept-elkeszites dont-print";
@@ -92,12 +96,26 @@ public class RecipeFinderController extends BaseController {
         String classNutrientTable = ".tapanyagtartalom-tablazat";
         String classNutrientType = ".column-block-title";
         String classNutrientValue = ".column-block-content, .clearfix";
+
+//        String name;
+//        List<BaseIngredient> ingredientss;
+//        boolean isFavorite;
+//        boolean isUserMade;
+//        String description;
+//        double cookTime;
+//        int recipeID;
+//        double difficulty;
+//        String URL;
+//        int portions;
+//        File picture;
+
         try {
             Document page = Jsoup.connect(url).get();
             //PICTURE
             System.out.println("Picture Link: \n");
             String pic = page.select(classPic).attr("src");
             System.out.println(pic);
+
             //INGREDIENTS
 
             Elements content = page.getElementsByClass(classIngredients).get(1).getElementsByTag("ul");
@@ -105,13 +123,17 @@ public class RecipeFinderController extends BaseController {
                 ingredients.add(act.text());
             }
 
+            getTagValue(content, "a", "href", Constant.trueBase[Index.NOSALTY_BASE]);
+
             System.out.println("Hozzávalók:");
             System.out.println(ingredients.toString());
+
+
             //PORTIONS
             Elements portion = page.select(classPortion + " span[itemprop=yield]");
             System.out.println("Adag: \n");
             System.out.println(portion.text());
-        //DESCRIPTION + (HYSTORTY OF RECIPE)
+            //DESCRIPTION + (HYSTORTY OF RECIPE)
             Elements story = page.select(classContent + " p");
             System.out.println("Story: \n");
             System.out.println(story.text());
@@ -122,17 +144,17 @@ public class RecipeFinderController extends BaseController {
                 System.out.println(step + " " + act.text() + "\n");
                 step++;
             }
-             // DIFFICULTY
+            // DIFFICULTY
             Elements difficulty = page.select(classDiff + " a[href]");
             System.out.println("Difficulty: \n");
             System.out.println(difficulty.text());
-             //TIME
+            //TIME
             Element time = page.select(classTime + " span.bold").get(0);
             System.out.println("Cook Time: \n");
             System.out.println(time.text());
 
             // NUTRIENTS
-            page = Jsoup.connect(getNutrientPageNOSALTY(url)).get();
+            page = Jsoup.connect(modifyUrlNOSALTY(url, "nutrients")).get();
             Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
             Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
             System.out.println("Nutrients: \n");
@@ -149,6 +171,7 @@ public class RecipeFinderController extends BaseController {
             getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeNOSALTY(url));
         }
     }
+
 
     public void scrapeNosaltyKG(String url) {
         String classIngredients = "recept-hozzavalok";
@@ -183,7 +206,7 @@ public class RecipeFinderController extends BaseController {
 
             //Tápanyagok
             System.out.println("Tápanyagok: ");
-            getNosaltyRecipeNutrients(getNutrientPageNOSALTY(url));
+            scrapeNutrientNOSALTY(modifyUrlNOSALTY(url, "nutrients"));
             System.out.println("-----------");
 
             getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeNOSALTY(url));
@@ -205,6 +228,26 @@ public class RecipeFinderController extends BaseController {
         }
     }
 
+    private List getTagValue(Elements elements, String tag, String tagValue, String addition) throws Exception {
+        List<String> result = new ArrayList<>();
+        for (Element e1 : elements) {
+            Elements list = e1.getElementsByTag(tag);
+            for (Element e2 : list) {
+                result.add(addition + e2.attr(tagValue));
+            }
+        }
+        System.out.println(result.toString());
+        return result;
+    }
+
+//    private String getIngredientProperties(Element element, String tag, String tagValue, String addition) throws Exception {
+//        String url = addition + element.getElementsByTag(tag).attr(tagValue);
+//
+//
+//        System.out.println(result.toString());
+//        return result;
+//    }
+
     private void printChildElementsByTag(Elements elements, String tag) throws Exception {
         for (Element e1 : elements) {
             Elements list = e1.getElementsByTag(tag);
@@ -224,12 +267,24 @@ public class RecipeFinderController extends BaseController {
         }
     }
 
-    private void getNosaltyRecipeNutrients(String url) throws IOException, Exception {
+    private void scrapeNutrientNOSALTY(String url) throws Exception {
+        Float kcal;
+        Float fat;
+        Float carbohydrate;
+        Float protein;
+
         String classNutrients = "tapanyagtartalom-tablazat";
         String classNutrientsList = "column-block";
         Document page = Jsoup.connect(url).get();
         Elements elements = page.getElementsByClass(classNutrients);
         printChildElementsByTag(elements.get(0).getElementsByClass(classNutrientsList), "dl");
+    }
+
+    private void getKcalNOSALTY(String url) throws IOException {
+        String kcalId = "kaloria-value";
+        Document page = Jsoup.connect(url).get();
+        Element id = page.getElementById(kcalId);
+        System.out.println(id.text());
     }
 
     /**
@@ -259,20 +314,29 @@ public class RecipeFinderController extends BaseController {
      * @param url base url
      * @return the nutrient page of given recipe
      */
-    private String getNutrientPageNOSALTY(String url) {
-        final String addCal = "tapanyag/";
+    private String modifyUrlNOSALTY(String url, String modifyTo) {
+        final String addNutrients = "tapanyag/";
+        final String addCal = "kaloria/";
+        final String ingredient = "alapanyag/";
 
-        if (url.contains("recept")) {
-            final String recipe = "recept/";
-            int pos = url.indexOf(recipe) + recipe.length();
+        if (modifyTo.toLowerCase().contains("nutrients")) {
+            if (url.contains("recept")) {
 
-            System.out.println(url.substring(0, pos) + addCal + url.substring(pos));
-            return url.substring(0, pos) + addCal + url.substring(pos);
+                final String recipe = "recept/";
+                int pos = url.indexOf(recipe) + recipe.length();
+
+                System.out.println(url.substring(0, pos) + addNutrients + url.substring(pos));
+                return url.substring(0, pos) + addNutrients + url.substring(pos);
+            }
+            if (url.contains("alapanyag")) {
+                int pos = url.indexOf(ingredient) + ingredient.length();
+
+                System.out.println(url.substring(0, pos) + addNutrients + url.substring(pos));
+                return url.substring(0, pos) + addNutrients + url.substring(pos);
+            }
         }
-        if (url.contains("alapanyag")) {
-            final String ingredient = "alapanyag/";
+        if (modifyTo.toLowerCase().contains("kcal")) {
             int pos = url.indexOf(ingredient) + ingredient.length();
-
             System.out.println(url.substring(0, pos) + addCal + url.substring(pos));
             return url.substring(0, pos) + addCal + url.substring(pos);
         }
@@ -323,7 +387,6 @@ public class RecipeFinderController extends BaseController {
             currentPage = subBegin + ch + subEnd;
             result.add(currentPage);
             count++;
-
         } while (!currentPage.contains(lastPage));
 
         System.out.println(result.toString());
@@ -332,6 +395,7 @@ public class RecipeFinderController extends BaseController {
 
     /**
      * Scrapes nosalty IngredientNosalty
+     *
      * @param url
      * @throws IOException
      */
@@ -341,23 +405,37 @@ public class RecipeFinderController extends BaseController {
         String classPicture = "article-img-wrapper floatleft";
         String classDescription = "block-content";
 
+        String name;
+        double quantity;
+        Nutrient nutrient;
+        Constant.ingredientType type;
+        Constant.ingredientQuantityType quantityType;
+
         try {
             //Name
             printChildElementsByTag(page.getElementsByClass(className), "h1");
 
-             //PICTURE
+            //PICTURE
             printTagValue(page.getElementsByClass(classPicture), "img", "src");
 
             //Description
             printChildElementsByTag(page.getElementsByClass(classDescription), "p");
 
-
             //IngredNutrients
-            getNosaltyRecipeNutrients(getNutrientPageNOSALTY(url));
-            System.out.println("-----------");
+            scrapeNutrientNOSALTY(modifyUrlNOSALTY(url, "nutrients"));
+            /**
+             * protein,
+             * carbo,
+             * fat,
+             *  +detailed in string form, for information, but not to calculate or to base search on
+             *
+             */
+
+
+            //kcal / 100 gramm
+            getKcalNOSALTY(modifyUrlNOSALTY(url, "kcal"));
 
             getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeIngredient(url));
-
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeIngredient(url));
@@ -377,7 +455,7 @@ public class RecipeFinderController extends BaseController {
      * @return
      * @throws IOException
      */
-    public List getIngredientUrl(String page) throws IOException {
+    public List getAllIngredientUrl(String page) throws IOException {
         Document document = Jsoup.connect(page).get();
         List<String> mainCategory = new ArrayList<>();
         List<String> subCategory = new ArrayList<>();
@@ -406,6 +484,12 @@ public class RecipeFinderController extends BaseController {
         return result;
     }
 
+    /**
+     * connect with agent and time out
+     *
+     * @param url
+     * @throws IOException
+     */
     public void scrapeCookpad(String url) throws IOException {
 
         Document doc = Jsoup.connect(url)

@@ -11,6 +11,8 @@ public class Nutrient {
     private Float carbohydrate;
     private Float protein;
 
+
+
     public Float getKcal() {
         return kcal;
     }

@@ -32,11 +32,11 @@ public class Messages {
     }
 
     public static String getInfoScrapeNOSALTY(String url) {
-        return INFO_DOWNLOAD_FACTORY + url + "\"!";
+        return INFO_SCRAPE_NOSALTY + url + "\"!";
     }
 
     public static String getErrorScrapeNOSALTY(String url) {
-        return ERROR_DOWNLOAD_FACTORY + url;
+        return ERROR_SCRAPE_NOSALTY + url;
     }
 
     public static String getInfoGetIngredientNOSALTY(String url) {

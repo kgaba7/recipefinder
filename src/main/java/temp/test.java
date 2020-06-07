@@ -14,15 +14,14 @@ public class test {
         RecipeFinderController controller = new RecipeFinderController(logger);
 
 
-        //   controller.scrapeNosalty("https://www.nosalty.hu/recept/cecei-lecsos-csirke-kapros-turos-galuskaval");
+           controller.scrapeNosalty("https://www.nosalty.hu/recept/angol-teasutemeny");
 //        controller.getFirstPageNOSALTY(Constant.mainCategoriesURL[Index.NOSALTY_BASE]);
 //        controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/teszta/osszes?page=0%2C0&limit=100&view=small&order=abc");
         // controller.loopPagesNOSALTY("https://www.nosalty.hu/recept/pudingos-turotorta-nylah-konyhajabol");
         //  controller.scrapeNosalty("https://www.nosalty.hu/recept/pudingos-turotorta-nylah-konyhajabol");
-        //   controller.scrapeIngredient("https://www.nosalty.hu/alapanyag/marha-hatszin");
+         //  controller.scrapeIngredient("https://www.nosalty.hu/alapanyag/alma");
         //   controller.scrapeNosaltyKG("https://www.nosalty.hu/recept/pudingos-turotorta-nylah-konyhajabol");
-        //controller.scrapeCookpad("https://cookpad.com/hu/receptek/12102307-gyrosos-pulykaszarny");
-        //  controller.getMainIngredients(Constant.ingredientBase[Index.NOSALTY_BASE]);
-        controller.getIngredientUrl(Constant.ingredientBase[Index.NOSALTY_BASE]);
+        //controller.scrapeCookpad("https://cookpad.com/hu/receptek/12102307-gyrosos-pulykaszarny")
+       // controller.getAllIngredientUrl(Constant.ingredientBase[Index.NOSALTY_BASE]);
     }
 }

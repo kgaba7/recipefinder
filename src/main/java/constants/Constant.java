@@ -2,8 +2,9 @@ package constants;
 
 public class Constant {
 
+    //todo identifier ftom ingredient name  (to other recipe sites)
     public enum ingredientType {
-        MEAT, VEGETABLE, SPICE, FRUIT, DAIRYPPRODUCT, PASTA, LIQUID, MUSHROOM
+        MEAT, VEGETABLE, SPICE, GRAINPRODUCT, FRUIT, DAIRYPPRODUCT, PASTA, LIQUID, MUSHROOM
     }
 
     public enum ingredientQuantityType {

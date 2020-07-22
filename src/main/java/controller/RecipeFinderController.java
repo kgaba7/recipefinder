@@ -2,8 +2,10 @@ package controller;
 
 import constants.Constant;
 import logger.RecipeFinderLogger;
-import model.base.BaseIngredient;
-import model.common.Nutrient;
+import model.common.BaseNutrient;
+import model.common.Category;
+import model.nosalty.IngredientNosalty;
+import model.nosalty.RecipeNosalty;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,11 +13,12 @@ import org.jsoup.select.Elements;
 import utils.Index;
 import utils.Messages;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author kissg on 2020. 05. 15.
@@ -80,153 +83,300 @@ public class RecipeFinderController extends BaseController {
      *
      * @param url URL
      */
-    public void scrapeNosalty(String url) throws IOException {
-        List<String> ingredients = new ArrayList<>();
+    public void scrapeNosalty(String url) {
+        RecipeNosalty recipeNosalty = new RecipeNosalty();
+
+        List<IngredientNosalty> ingredientList = new ArrayList<>();
+        IngredientNosalty ingredient;
+        Category category;
+        BaseNutrient baseIngredientNutrient;
+
         HashMap<String, String> nutritionalValue = new HashMap<>();
-        int count = 0;
+        HashMap<String, String> ingredientFull = new HashMap<>();
+
+        StringBuilder recipeDescription = new StringBuilder();
         String classPic = ".ns-recept-img-layer img";
         String classContent = ".article-content";
-        String ingrediclass = ".article-content";
-
+        String classRecipeName = "h1.dont-print";
         String classIngredients = "column-block-content";
         String classPortion = "column grid-one, .dont-print .recept-hozzavalok .column-block-title";
         String classDescription = "column-block recept-elkeszites dont-print";
         String classTime = ".right-text, .dont-print";
         String classDiff = ".floatright";
-        String classNutrientTable = ".tapanyagtartalom-tablazat";
-        String classNutrientType = ".column-block-title";
-        String classNutrientValue = ".column-block-content, .clearfix";
 
-//        String name;
-//        List<BaseIngredient> ingredientss;
-//        boolean isFavorite;
-//        boolean isUserMade;
-//        String description;
-//        double cookTime;
-//        int recipeID;
-//        double difficulty;
-//        String URL;
-//        int portions;
-//        File picture;
 
         try {
             Document page = Jsoup.connect(url).get();
+            //setRecipe URL
+            recipeNosalty.setURL(url);
+
+            //NAME
+            Elements recipeName = page.select(classRecipeName);
+            //setName
+            recipeNosalty.setName(recipeName.text());
+
             //PICTURE
-            System.out.println("Picture Link: \n");
             String pic = page.select(classPic).attr("src");
             System.out.println(pic);
-
-            //INGREDIENTS
-
-            Elements content = page.getElementsByClass(classIngredients).get(1).getElementsByTag("ul");
-            for (Element act : content) {
-                ingredients.add(act.text());
-            }
-
-            getTagValue(content, "a", "href", Constant.trueBase[Index.NOSALTY_BASE]);
-
-            System.out.println("Hozzávalók:");
-            System.out.println(ingredients.toString());
-
+            //setPicture
+            recipeNosalty.setPicture(pic);
 
             //PORTIONS
             Elements portion = page.select(classPortion + " span[itemprop=yield]");
-            System.out.println("Adag: \n");
-            System.out.println(portion.text());
+            //setPortions
+            recipeNosalty.setPortions(getInt(portion.text()));
+            System.out.println(recipeNosalty.getPortions());
+
             //DESCRIPTION + (HYSTORTY OF RECIPE)
             Elements story = page.select(classContent + " p");
-            System.out.println("Story: \n");
-            System.out.println(story.text());
-            System.out.println("Description: \n");
             Elements description = page.getElementsByClass(classDescription).get(0).getElementsByTag("li");
+            recipeDescription.append(story.text() + "\n");
             int step = 1;
             for (Element act : description) {
-                System.out.println(step + " " + act.text() + "\n");
+                recipeDescription.append(String.valueOf(step) + " " + act.text() + "\n");
                 step++;
             }
+            //setDescription
+            recipeNosalty.setDescription(recipeDescription);
+            System.out.println(recipeNosalty.getDescription());
+
+            //TIME
+            Element time = page.select(classTime + " span.bold").last();
+            //setTime
+            recipeNosalty.setCookTimeInMinutes(getDigits(time.text()));
+            System.out.println(recipeNosalty.getCookTimeInMinutes());
+
+
             // DIFFICULTY
             Elements difficulty = page.select(classDiff + " a[href]");
-            System.out.println("Difficulty: \n");
-            System.out.println(difficulty.text());
-            //TIME
-            Element time = page.select(classTime + " span.bold").get(0);
-            System.out.println("Cook Time: \n");
-            System.out.println(time.text());
+            //setDifficulty
+            recipeNosalty.setDifficulty(setDifficulty(difficulty.text(), recipeNosalty));
+            System.out.println(recipeNosalty.getDifficulty());
 
-            // NUTRIENTS
-            page = Jsoup.connect(modifyUrlNOSALTY(url, "nutrients")).get();
-            Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
-            Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
-            System.out.println("Nutrients: \n");
-            for (Element main : nutrientType) {
-                for (int i = count; count < nutrientValueList.size(); count++) {
-                    nutritionalValue.put(main.text(), nutrientValueList.get(i).text());
-                    count++;
-                    break;
+
+            //setRecipeCategory
+            category = new Category();
+            category.setMain(page.select(".clearfix .breadcrumb > a > span").get(1).text());
+            category.setSub(page.select(".clearfix .breadcrumb > a > span").get(2).text());
+
+            recipeNosalty.setCategory(category);
+
+            //INGREDIENT TO ADD STRING
+            //Set ToAdd
+
+            Elements toAdd = page.getElementsByClass(classIngredients).get(1).getElementsByTag("li");
+            for (Element el : toAdd) {
+                ingredient = new IngredientNosalty();
+                ingredient.setToAdd(el.text());
+                ingredientList.add(ingredient);
+            }
+
+            //switches to recipe kcal page
+            page = Jsoup.connect(modifyUrlNOSALTY(url, "kcal")).get();
+            Elements itemList = page.getElementsByClass("recept-kaloriatartalom").get(1).getElementsByClass("item-list");
+
+
+            String ingredintDescriptionClass = ".article-field .block-content > p";
+            //set Ingredient Fields
+            int elementIndex = 0;
+            for (Element list : itemList) {
+                for (int i = 0; i < list.getElementsByTag("li").size(); i++) {
+                    page = Jsoup.connect(Constant.trueBase[0] + list.getElementsByTag("li").get(i).getElementsByTag("a").attr("href"))
+                            .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                            .referrer("http://www.google.com")
+                            // .timeout(0)
+                            .get();
+                    ingredientList.get(elementIndex).setName(page.select("h1").first().text().replaceAll("alapanyag", ""));
+                    ingredientList.get(elementIndex).setUrl(Constant.trueBase[0] + list.getElementsByTag("li").get(i).getElementsByTag("a").attr("href")); //todo make method
+                    ingredientList.get(elementIndex).setDesc(page.select(ingredintDescriptionClass).first().text());
+
+                    category = new Category();
+
+                    category.setMain(page.getElementsByClass("article-meta border-bottom-dotted clearfix").get(0).getElementsByClass("breadcrumb").get(0).getElementsByTag("a").get(1).text()); // todo make method
+                    category.setSub(page.getElementsByClass("article-meta border-bottom-dotted clearfix").get(0).getElementsByClass("breadcrumb").get(0).getElementsByTag("a").get(2).text());
+                    ingredientList.get(elementIndex).setCategory(category);
+
+                    //switches to calories page
+                    page = Jsoup.connect(modifyUrlNOSALTY(Constant.trueBase[0] + list.getElementsByTag("li").get(i).getElementsByTag("a").attr("href"), "kcal")).get();
+                    baseIngredientNutrient = new BaseNutrient();
+                    baseIngredientNutrient.setKcal(getFloat(page.getElementById("kaloria-value").getElementsByClass("floatright").text())); //todo make method
+
+                    //switches to IngredientNutrient page
+                    page = Jsoup.connect(modifyUrlNOSALTY(Constant.trueBase[0] + list.getElementsByTag("li").get(i).getElementsByTag("a").attr("href"), "nutrients")).get();
+
+                    Elements nutrientalValuesTables = page.getElementsByClass("tapanyagtartalom-tablazat").get(0).getElementsByClass("column-block"); // todo meka method
+                    ingredientList.get(elementIndex).setBaseNutrient(setNutritionalValue(baseIngredientNutrient, nutrientalValuesTables));  //todo the extended nutritional values
+
+                    list.getElementsByTag("li").get(i).getElementsByTag("a").remove();
+                    list.getElementsByTag("li").get(i).getElementsByTag("span").remove();
+
+                    ingredientList.get(elementIndex).setQuantity(getDigits(list.getElementsByTag("li").get(i).text()));
+                    ingredientList.get(elementIndex).setQuantityType(Constant.ingredientQuantityType.GRAM); // nosalty all gram.
+
+                    elementIndex++;
                 }
             }
-            nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
+
+
+            recipeNosalty.setIngredientNosalty(ingredientList);
+            int stopheremynigo = 234;
+
+            setRecipeBaseNutrient(recipeNosalty, ingredientList);
+
+            int asd = 000;
+            // NUTRIENTS extended information until extended nutritional values are scraped
+//            page = Jsoup.connect(modifyUrlNOSALTY(url, "nutrients")).get();
+//            Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
+//            Elements nutrientValueList = page.select(classNutrientValue).select(" dl");
+//            System.out.println("Nutrients: \n");
+//            System.out.println(nutrientType.text());
+//            System.out.println(nutrientValueList.text());
+//            for (Element main : nutrientType) {
+//                for (int i = count; count < nutrientValueList.size(); count++) {
+//                    nutritionalValue.put(main.text(), nutrientValueList.get(i).text());
+//                    count++;
+//                    break;
+//                }
+//            }
+//            nutritionalValue.forEach((key, value) -> System.out.println(key + " : " + value));
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeNOSALTY(url));
         }
+
+
     }
 
 
-    public void scrapeNosaltyKG(String url) {
-        String classIngredients = "recept-hozzavalok";
-        String classRecipe = "recept-elkeszites";
-        String classIngredientsList = "item-list";
-        String classDifficulty = ".floatright a[href]";
-        String classTime = ".right-text, .dont-print span.bold";
-        boolean isBaseUrlOk = false;
-        try {
-            Document page = Jsoup.connect(url).get();
+    //see how it ads up correctly. but the nosalty site shows different values: so they dont just add up the values, they must use a different method.
+    private void setRecipeBaseNutrient(RecipeNosalty recipeNosalty, List<IngredientNosalty> ingredientList) {
+        float kcal = 0;
+        float protein = 0;
+        float carbohydrate = 0;
+        float fat = 0;
+        float perPortion = 100;
+        BaseNutrient baseNutrient = new BaseNutrient();
+        for (IngredientNosalty ingredientNosalty : ingredientList) {
+            kcal += (ingredientNosalty.getQuantity() / perPortion) * ingredientNosalty.getBaseNutrient().getKcal();
+            protein += (ingredientNosalty.getQuantity() / perPortion) * ingredientNosalty.getBaseNutrient().getProtein();
+            carbohydrate += (ingredientNosalty.getQuantity() / perPortion) * ingredientNosalty.getBaseNutrient().getCarbohydrate();
+            fat += (ingredientNosalty.getQuantity() / perPortion) * ingredientNosalty.getBaseNutrient().getFat();
 
-            //Hozzávalók
-            System.out.println("Hozzávalók: ");
-            printChildElementsByTag(page.getElementsByClass(classIngredients).get(0).getElementsByClass(classIngredientsList), "li");
-            System.out.println("-----------");
-
-            //Elkészítés
-            System.out.println("Elkészítés: ");
-            printChildElementsByTag(page.getElementsByClass(classRecipe), "li");
-            System.out.println("-----------");
-
-            //Nehézség
-            System.out.println("Nehézség: ");
-            printChildElementsByTag(page.select(classDifficulty), "a");
-            System.out.println("-----------");
-
-            //Idő
-            System.out.println("Idő: ");
-            printChildElementsByTag(page.select(classTime), "span");
-            System.out.println("-----------");
-            isBaseUrlOk = true;
-
-            //Tápanyagok
-            System.out.println("Tápanyagok: ");
-            scrapeNutrientNOSALTY(modifyUrlNOSALTY(url, "nutrients"));
-            System.out.println("-----------");
-
-            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeNOSALTY(url));
-            //todo log OK    ?
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (isBaseUrlOk) {
-                //todo log Jsoup.connect error nutrients
-            } else {
-                //todo log Jsoup.connect error base
-            }
-        } catch (Exception e) {
-            if (isBaseUrlOk) {
-                //todo log error nutrients
-            } else {
-                //todo log error base
-            }
         }
+        baseNutrient.setKcal(kcal);
+        baseNutrient.setProtein(protein);
+        baseNutrient.setCarbohydrate(carbohydrate);
+        baseNutrient.setFat(fat);
+
+        recipeNosalty.setBaseNutrient(baseNutrient);
     }
+
+
+    //todo fuse these 2 methods
+    private int getInt(String string) {
+        String tmp = string.replaceAll("[^0-9]", "");
+        return Integer.parseInt(tmp);
+    }
+
+
+    // Matches int or double
+    private double getDigits(String string) {
+        double result = 0;
+        Pattern pattern = Pattern.compile("\\d+(?:\\.\\d+)?");
+        Matcher matcher = pattern.matcher(string);
+        while (matcher.find()) {
+            result = Double.parseDouble(matcher.group());
+
+        }
+
+        return result;
+    }
+
+    private float getFloat(String string) {
+        float result = 0;
+        Pattern pattern = Pattern.compile("\\d+(?:\\.\\d+)?");
+        Matcher matcher = pattern.matcher(string);
+        while (matcher.find()) {
+            result = Float.parseFloat(matcher.group());
+        }
+
+        return result;
+    }
+
+    //todo jobban/szebben? !! Re do this shit
+    private double setDifficulty(String difficulty, RecipeNosalty recipeNosalty) {
+        double score;
+        if (difficulty.contains("könnyű")) {
+            score = 1;
+            return recipeNosalty.getCookTimeInMinutes() * score / 10;
+
+        }
+        if (difficulty.contains("közepes")) {
+            score = 2;
+            return recipeNosalty.getCookTimeInMinutes() * score / 10;
+        }
+        if (difficulty.contains("nehéz")) {
+            score = 3;
+            return recipeNosalty.getCookTimeInMinutes() * score / 10;
+        }
+        return -1;
+    }
+
+
+//    public void scrapeNosaltyKG(String url) {
+//        String classIngredients = "recept-hozzavalok";
+//        String classRecipe = "recept-elkeszites";
+//        String classIngredientsList = "item-list";
+//        String classDifficulty = ".floatright a[href]";
+//        String classTime = ".right-text, .dont-print span.bold";
+//        boolean isBaseUrlOk = false;
+//        try {
+//            Document page = Jsoup.connect(url).get();
+//
+//            //Hozzávalók
+//            System.out.println("Hozzávalók: ");
+//            printChildElementsByTag(page.getElementsByClass(classIngredients).get(0).getElementsByClass(classIngredientsList), "li");
+//            System.out.println("-----------");
+//
+//            //Elkészítés
+//            System.out.println("Elkészítés: ");
+//            printChildElementsByTag(page.getElementsByClass(classRecipe), "li");
+//            System.out.println("-----------");
+//
+//            //Nehézség
+//            System.out.println("Nehézség: ");
+//            printChildElementsByTag(page.select(classDifficulty), "a");
+//            System.out.println("-----------");
+//
+//            //Idő
+//            System.out.println("Idő: ");
+//            printChildElementsByTag(page.select(classTime), "span");
+//            System.out.println("-----------");
+//            isBaseUrlOk = true;
+//
+//            //Tápanyagok
+//            System.out.println("Tápanyagok: ");
+//            scrapeNutrientNOSALTY(modifyUrlNOSALTY(url, "nutrients"));
+//            System.out.println("-----------");
+//
+//            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeNOSALTY(url));
+//            //todo log OK    ?
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            if (isBaseUrlOk) {
+//                //todo log Jsoup.connect error nutrients
+//            } else {
+//                //todo log Jsoup.connect error base
+//            }
+//        } catch (Exception e) {
+//            if (isBaseUrlOk) {
+//                //todo log error nutrients
+//            } else {
+//                //todo log error base
+//            }
+//        }
+//    }
 
     private List getTagValue(Elements elements, String tag, String tagValue, String addition) throws Exception {
         List<String> result = new ArrayList<>();
@@ -240,21 +390,32 @@ public class RecipeFinderController extends BaseController {
         return result;
     }
 
-//    private String getIngredientProperties(Element element, String tag, String tagValue, String addition) throws Exception {
-//        String url = addition + element.getElementsByTag(tag).attr(tagValue);
-//
-//
-//        System.out.println(result.toString());
-//        return result;
-//    }
+    private List getTagValue(Elements elements, String tag, String tagValue) throws Exception {
+        List<String> result = new ArrayList<>();
+        for (Element e1 : elements) {
+            Elements element = e1.getElementsByTag(tag);
+            result.add(element.attr(tagValue));
+        }
+        System.out.println(result.toString());
+        return result;
+    }
 
     private void printChildElementsByTag(Elements elements, String tag) throws Exception {
+
         for (Element e1 : elements) {
             Elements list = e1.getElementsByTag(tag);
             for (Element e2 : list) {
                 System.out.println(e2.text());
             }
         }
+    }
+
+    private List getChildElementsByTag(Elements elements, String tag) throws Exception {
+        List<String> result = new ArrayList<>();
+        for (Element e1 : elements) {
+            result.add(e1.getElementsByTag(tag).text());
+        }
+        return result;
     }
 
 
@@ -268,11 +429,6 @@ public class RecipeFinderController extends BaseController {
     }
 
     private void scrapeNutrientNOSALTY(String url) throws Exception {
-        Float kcal;
-        Float fat;
-        Float carbohydrate;
-        Float protein;
-
         String classNutrients = "tapanyagtartalom-tablazat";
         String classNutrientsList = "column-block";
         Document page = Jsoup.connect(url).get();
@@ -325,20 +481,32 @@ public class RecipeFinderController extends BaseController {
                 final String recipe = "recept/";
                 int pos = url.indexOf(recipe) + recipe.length();
 
-                System.out.println(url.substring(0, pos) + addNutrients + url.substring(pos));
+
                 return url.substring(0, pos) + addNutrients + url.substring(pos);
             }
             if (url.contains("alapanyag")) {
                 int pos = url.indexOf(ingredient) + ingredient.length();
 
-                System.out.println(url.substring(0, pos) + addNutrients + url.substring(pos));
+
                 return url.substring(0, pos) + addNutrients + url.substring(pos);
             }
         }
         if (modifyTo.toLowerCase().contains("kcal")) {
-            int pos = url.indexOf(ingredient) + ingredient.length();
-            System.out.println(url.substring(0, pos) + addCal + url.substring(pos));
-            return url.substring(0, pos) + addCal + url.substring(pos);
+            if (url.contains("recept")) {
+
+                final String recipe = "recept/";
+                int pos = url.indexOf(recipe) + recipe.length();
+
+
+                return url.substring(0, pos) + addCal + url.substring(pos);
+            }
+            if (url.contains("alapanyag")) {
+                int pos = url.indexOf(ingredient) + ingredient.length();
+
+
+                return url.substring(0, pos) + addCal + url.substring(pos);
+            }
+
         }
         return "error";
     }
@@ -369,7 +537,7 @@ public class RecipeFinderController extends BaseController {
      * @return
      * @throws IOException
      */
-    public String loopPagesNOSALTY(String page) throws IOException {
+    public List<String> loopPagesNOSALTY(String page) throws IOException {
         Document document = Jsoup.connect(page).get();
         final String index = "=0%2C";
         List<String> result = new ArrayList<>();
@@ -390,56 +558,82 @@ public class RecipeFinderController extends BaseController {
         } while (!currentPage.contains(lastPage));
 
         System.out.println(result.toString());
-        return page;
+        return result;
     }
 
     /**
      * Scrapes nosalty IngredientNosalty
      *
-     * @param url
+     * @param
      * @throws IOException
      */
-    public void scrapeIngredient(String url) throws IOException {
-        Document page = Jsoup.connect(url).get();
-        String className = "article-meta border-bottom-dotted clearfix";
-        String classPicture = "article-img-wrapper floatleft";
-        String classDescription = "block-content";
+    public List createAllIngredientsNosalty() throws IOException {
+        List urls = getAllIngredientUrl("https://www.nosalty.hu/alapanyagok");
+        Document page;
+        List<IngredientNosalty> result = new ArrayList<>();
+        IngredientNosalty ingredient;
+        Category category;
+        BaseNutrient baseNutrient;
 
-        String name;
-        double quantity;
-        Nutrient nutrient;
-        Constant.ingredientType type;
-        Constant.ingredientQuantityType quantityType;
+        //todo assign variables to long strings
+        for (Object url : urls) {
+            ingredient = new IngredientNosalty();
+            page = Jsoup.connect(url.toString())
+                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                    .referrer("http://www.google.com")
+                    .timeout(0)
+                    .get();
+            ingredient.setName(page.select("h1").first().text().replaceAll("alapanyag", ""));
+            ingredient.setUrl(url.toString());
+            ingredient.setDesc(page.select(".article-field .block-content > p").first().text());
 
-        try {
-            //Name
-            printChildElementsByTag(page.getElementsByClass(className), "h1");
+            category = new Category();
 
-            //PICTURE
-            printTagValue(page.getElementsByClass(classPicture), "img", "src");
+            category.setMain(page.getElementsByClass("article-meta border-bottom-dotted clearfix").get(0).getElementsByClass("breadcrumb").get(0).getElementsByTag("a").get(1).text());
+            category.setSub(page.getElementsByClass("article-meta border-bottom-dotted clearfix").get(0).getElementsByClass("breadcrumb").get(0).getElementsByTag("a").get(2).text());
+            ingredient.setCategory(category);
 
-            //Description
-            printChildElementsByTag(page.getElementsByClass(classDescription), "p");
+            //switches to calories page
+            page = Jsoup.connect(modifyUrlNOSALTY(url.toString(), "kcal")).get();
+            baseNutrient = new BaseNutrient();
+            baseNutrient.setKcal(getFloat(page.getElementById("kaloria-value").getElementsByClass("floatright").text()));
 
-            //IngredNutrients
-            scrapeNutrientNOSALTY(modifyUrlNOSALTY(url, "nutrients"));
-            /**
-             * protein,
-             * carbo,
-             * fat,
-             *  +detailed in string form, for information, but not to calculate or to base search on
-             *
-             */
+            //switches to baseNutrient page
+            page = Jsoup.connect(modifyUrlNOSALTY(url.toString(), "nutrients")).get();
 
+            Elements nutrientalValuesTables = page.getElementsByClass("tapanyagtartalom-tablazat").get(0).getElementsByClass("column-block");
+            ingredient.setBaseNutrient(setNutritionalValue(baseNutrient, nutrientalValuesTables));
 
-            //kcal / 100 gramm
-            getKcalNOSALTY(modifyUrlNOSALTY(url, "kcal"));
+            result.add(ingredient);
+            //todo the extended nutritional values
 
-            getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoScrapeIngredient(url));
-        } catch (Exception e) {
-            e.printStackTrace();
-            getLogger().error(RecipeFinderController.class.getName(), Messages.getErrorScrapeIngredient(url));
         }
+
+        return result;
+    }
+
+    private BaseNutrient setNutritionalValue(BaseNutrient baseNutrient, Elements nutrientBlocks) {
+        for (Element table : nutrientBlocks) {
+            if (table.getElementsByClass("column-block-title").text().contains("fehérje")) {
+                baseNutrient.setProtein(getFloat(table.getElementsByTag("dd").first().text()));
+            }
+            if (table.getElementsByClass("column-block-title").text().contains("zsír")) {
+                baseNutrient.setFat(getFloat(table.getElementsByTag("dd").first().text()));
+            }
+            if (table.getElementsByClass("column-block-title").text().contains("szénhidrát")) {
+                baseNutrient.setCarbohydrate(getFloat(table.getElementsByTag("dd").first().text()));
+            }
+            if (baseNutrient.getCarbohydrate() == null) {
+                baseNutrient.setCarbohydrate(0f);
+            }
+            if (baseNutrient.getFat() == null) {
+                baseNutrient.setFat(0f);
+            }
+            if (baseNutrient.getProtein() == null) {
+                baseNutrient.setProtein(0f);
+            }
+        }
+        return baseNutrient;
     }
 
     private void addUrlToList(List list, Elements elements, String tag, String tagValue, int start) {
@@ -449,32 +643,38 @@ public class RecipeFinderController extends BaseController {
     }
 
     /**
-     * returns all ingredient url on nosalty
+     * returns all ingredient urls on nosalty.hu
      *
      * @param page
      * @return
      * @throws IOException
      */
     public List getAllIngredientUrl(String page) throws IOException {
-        Document document = Jsoup.connect(page).get();
+        //Document document = Jsoup.connect(page).get(); // simple connect
+        Document document = Jsoup.connect(page)
+                .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                .referrer("http://www.google.com")
+                .timeout(0)
+                .get();
         List<String> mainCategory = new ArrayList<>();
         List<String> subCategory = new ArrayList<>();
         List<String> result = new ArrayList<>();
         String classMain = ".article-list-items .clearfix .kategoria, .kategoria-118 a.article-link";
 
         try {
-            printTagValue(document.select(classMain), "a", "href");
             addUrlToList(mainCategory, document.select(classMain), "a", "href", 0);
             for (String url : mainCategory) {
                 document = Jsoup.connect(url).get();
                 addUrlToList(subCategory, document.select(classMain), "a", "href", 1); // start index excludes first item of the list
             }
+
             for (String url : subCategory) {
                 document = Jsoup.connect(url).get();
                 addUrlToList(result, document.select(classMain), "a", "href", 1);
 
                 getLogger().info(RecipeFinderController.class.getName(), Messages.getInfoGetIngredientNOSALTY(url));
             }
+
         } catch (Exception e2) {
             e2.printStackTrace();
 
@@ -495,7 +695,7 @@ public class RecipeFinderController extends BaseController {
         Document doc = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
                 .referrer("http://www.google.com")
-                .timeout(100)
+                .timeout(10)
                 .get();
         System.out.println(doc.text());
 
@@ -665,14 +865,8 @@ public class RecipeFinderController extends BaseController {
 
 
     public void elapsedTimeTest() throws IOException {
-        try {
-            long start = System.currentTimeMillis();
-
-            Thread.sleep(2000);
-            System.out.println(getElapsedTime(System.currentTimeMillis() - start));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        long start = System.currentTimeMillis();
+        System.out.println(getElapsedTime(System.currentTimeMillis() - start));
 
     }
 }

@@ -1,7 +1,8 @@
 package model.base;
 
 import constants.Constant;
-import model.common.Nutrient;
+import model.common.BaseNutrient;
+import model.common.Category;
 
 /**
  * @author kissg on 2020. 06. 04.
@@ -9,7 +10,7 @@ import model.common.Nutrient;
 public class BaseIngredient {
     private String name;
     private double quantity;
-    private Nutrient nutrient;
+    private BaseNutrient baseNutrient;
     private Constant.ingredientType type;
     private Constant.ingredientQuantityType quantityType;
 
@@ -29,20 +30,12 @@ public class BaseIngredient {
         this.quantity = quantity;
     }
 
-    public Nutrient getNutrient() {
-        return nutrient;
+    public BaseNutrient getBaseNutrient() {
+        return baseNutrient;
     }
 
-    public void setNutrient(Nutrient nutrient) {
-        this.nutrient = nutrient;
-    }
-
-    public Constant.ingredientType getType() {
-        return type;
-    }
-
-    public void setType(Constant.ingredientType type) {
-        this.type = type;
+    public void setBaseNutrient(BaseNutrient baseNutrient) {
+        this.baseNutrient = baseNutrient;
     }
 
     public Constant.ingredientQuantityType getQuantityType() {
@@ -51,5 +44,24 @@ public class BaseIngredient {
 
     public void setQuantityType(Constant.ingredientQuantityType quantityType) {
         this.quantityType = quantityType;
+    }
+
+
+
+    public String toString(){
+        StringBuilder result = new StringBuilder();
+
+
+
+        return result.toString();
+    }
+
+
+    public Constant.ingredientType getType() {
+        return type;
+    }
+
+    public void setType(Constant.ingredientType type) {
+        this.type = type;
     }
 }

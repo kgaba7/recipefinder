@@ -1,35 +1,34 @@
 package model.nosalty;
 
 import model.base.BaseRecipe;
+import model.common.BaseNutrient;
+import model.common.Category;
 
-import java.io.File;
+import java.util.List;
 
 /**
  * @author kissg on 2020. 05. 15.
  */
 public class RecipeNosalty extends BaseRecipe {
-    private String description;
-    private double cookTime;
+    private List<IngredientNosalty> ingredientNosalty;
+    private StringBuilder description;
+    private double cookTimeInMinutes;
     private int recipeID;
     private double difficulty;
     private String URL;
     private int portions;
-    private File picture;
+    private String picture;
+    private BaseNutrient baseNutrient;
+    private Category category;
+    private int views;
 
-    public String getDescription() {
-        return description;
+
+    public double getCookTimeInMinutes() {
+        return cookTimeInMinutes;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getCookTime() {
-        return cookTime;
-    }
-
-    public void setCookTime(double cookTime) {
-        this.cookTime = cookTime;
+    public void setCookTimeInMinutes(double cookTimeInMinutes) {
+        this.cookTimeInMinutes = cookTimeInMinutes;
     }
 
     public int getRecipeID() {
@@ -64,11 +63,53 @@ public class RecipeNosalty extends BaseRecipe {
         this.portions = portions;
     }
 
-    public File getPicture() {
+
+    public String getPicture() {
         return picture;
     }
 
-    public void setPicture(File picture) {
+    public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public BaseNutrient getBaseNutrient() {
+        return baseNutrient;
+    }
+
+    public void setBaseNutrient(BaseNutrient baseNutrient) {
+        this.baseNutrient = baseNutrient;
+    }
+
+    public StringBuilder getDescription() {
+        return description;
+    }
+
+    public void setDescription(StringBuilder description) {
+        this.description = description;
+    }
+
+
+    public List<IngredientNosalty> getIngredientNosalty() {
+        return ingredientNosalty;
+    }
+
+    public void setIngredientNosalty(List<IngredientNosalty> ingredientNosalty) {
+        this.ingredientNosalty = ingredientNosalty;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
     }
 }

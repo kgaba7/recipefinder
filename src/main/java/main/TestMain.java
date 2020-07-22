@@ -10,6 +10,6 @@ public class TestMain {
     public static void main(String[] args) {
         RecipeFinderLogger logger = new RecipeFinderLogger();
         RecipeFinderController controller = new RecipeFinderController(logger);
-        controller.scrapeNosaltyKG("");
+       // controller.scrapeNosaltyKG("");
     }
 }

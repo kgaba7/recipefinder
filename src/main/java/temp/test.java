@@ -16,8 +16,9 @@ public class test {
         //controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/torta/osszes?page=0%2C3&limit=100&view=small&order=abc");
 
 
-        controller.scrapeNosalty("https://www.nosalty.hu/recept/shortbread-keksz-ujragondolva-reform-valtozat");
-        //  controller.scrapeNosalty("https://www.nosalty.hu/recept/mexikoi-grilltal");
+        //controller.scrapeNosalty("https://www.nosalty.hu/recept/shortbread-keksz-ujragondolva-reform-valtozat");
+          controller.scrapeNosalty("https://www.nosalty.hu/recept/mexikoi-grilltal");
+
         // controller.elapsedTimeTest();
         //    controller.getAllIngredientUrl("https://www.nosalty.hu/alapanyagok");
         //   controller.createAllIngredientsNosalty();

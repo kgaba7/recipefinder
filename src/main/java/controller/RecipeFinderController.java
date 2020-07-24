@@ -82,7 +82,7 @@ public class RecipeFinderController extends BaseController {
      * Downloads a single recipe from the given "Nosalty" URL
      *
      * @param url URL
-     */
+     */ // todo classify ingredient qunatyty types
     public void scrapeNosalty(String url) {
         RecipeNosalty recipeNosalty = new RecipeNosalty();
 
@@ -219,11 +219,11 @@ public class RecipeFinderController extends BaseController {
 
 
             recipeNosalty.setIngredientNosalty(ingredientList);
-            int stopheremynigo = 234;
+
 
             setRecipeBaseNutrient(recipeNosalty, ingredientList);
 
-            int asd = 000;
+            int stopheremynigo = 234;
             // NUTRIENTS extended information until extended nutritional values are scraped
 //            page = Jsoup.connect(modifyUrlNOSALTY(url, "nutrients")).get();
 //            Elements nutrientType = page.select(classNutrientTable).get(0).select(classNutrientType);
@@ -247,8 +247,12 @@ public class RecipeFinderController extends BaseController {
 
     }
 
+    //todo do this to scale project
+    private void classifyIngredientQuantityType(String input) {
 
-    //see how it ads up correctly. but the nosalty site shows different values: so they dont just add up the values, they must use a different method.
+    }
+
+    //see how it ads up correctly. but the nosalty site shows different values: so they dont just add up the values, they must use a different method. Its not a meaningful difference, it will be good like this.
     private void setRecipeBaseNutrient(RecipeNosalty recipeNosalty, List<IngredientNosalty> ingredientList) {
         float kcal = 0;
         float protein = 0;
@@ -856,6 +860,10 @@ public class RecipeFinderController extends BaseController {
      * its all in class="recipe-item end column"
      * in aa href
      * todo access recipe details
+     *
+     *
+     *
+     * https://www.receptmuhely.hu/
      */
     /**
      * COOKPAD.hu

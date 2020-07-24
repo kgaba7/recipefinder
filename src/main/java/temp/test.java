@@ -12,11 +12,11 @@ public class test {
         RecipeFinderController controller = new RecipeFinderController(logger);
 
         //  controller.loopPagesNOSALTY("https://www.nosalty.hu/receptek/kategoria/aprosutemeny/osszes?page=0%2C0&limit=100&view=small&order=abc");
-        controller.getFirstPageNOSALTY("https://www.nosalty.hu/receptek/kategoria?order=abc&dir=0");
-        controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/torta/osszes?page=0%2C3&limit=100&view=small&order=abc");
+       // controller.getFirstPageNOSALTY("https://www.nosalty.hu/receptek/kategoria?order=abc&dir=0");
+        //controller.getRecipeUrlNOSALTY("https://www.nosalty.hu/receptek/kategoria/torta/osszes?page=0%2C3&limit=100&view=small&order=abc");
 
 
-        //controller.scrapeNosalty("https://www.nosalty.hu/recept/sertesszuz-nyarsak-saslikmartassal");
+        controller.scrapeNosalty("https://www.nosalty.hu/recept/shortbread-keksz-ujragondolva-reform-valtozat");
         //  controller.scrapeNosalty("https://www.nosalty.hu/recept/mexikoi-grilltal");
         // controller.elapsedTimeTest();
         //    controller.getAllIngredientUrl("https://www.nosalty.hu/alapanyagok");

@@ -1,21 +1,28 @@
 package controller;
 
+import com.google.gson.Gson;
 import constants.Constant;
 import logger.RecipeFinderLogger;
 import model.common.BaseNutrient;
 import model.common.Category;
 import model.nosalty.IngredientNosalty;
 import model.nosalty.RecipeNosalty;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Index;
 import utils.Messages;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -871,6 +878,39 @@ public class RecipeFinderController extends BaseController {
      * @throws IOException
      */
 
+    private List<RecipeNosalty> mapString2RecipeNosalty(String content)
+    {
+        List<RecipeNosalty> result = new LinkedList<>();
+        JSONParser parser = new JSONParser();
+        try {
+            JSONArray array = (JSONArray) parser.parse(content);
+            for (Object o : array)
+            {
+                JSONObject jsonObject = (JSONObject) o;
+                RecipeNosalty recipeNosalty = new RecipeNosalty();
+
+                //random írok valamit
+                recipeNosalty.setPicture(jsonObject.get("picture").toString());
+                //stb stb
+
+                //nyilván kell egy loop majd az ingredienteknek, nutri stb stb
+
+                result.add(recipeNosalty);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private String list2Json(List<RecipeNosalty> list) {
+        return new Gson().toJson(list);
+    }
+
+    private void saveFile(String path, String content)
+    {
+        throw new NotImplementedException();
+    }
 
     public void elapsedTimeTest() throws IOException {
         long start = System.currentTimeMillis();
